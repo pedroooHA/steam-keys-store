@@ -1,24 +1,10 @@
 <?php
+
 class Game {
-    private $id;
-    private $title;
-    private $price;
-    private $category_id;
-    private $steam_key;
-    private $description;
-    private $image; // nova propriedade para imagem
-
-    public function __construct($data = []) {
-        $this->id = $data['id'] ?? null;
-        $this->title = $data['title'] ?? null;
-        $this->price = $data['price'] ?? null;
-        $this->category_id = $data['category_id'] ?? null;
-        $this->steam_key = $data['steam_key'] ?? null;
-        $this->description = $data['description'] ?? null;
-        $this->image = $data['image'] ?? null;
-    }
-
-    // getters e setters
+    // Propriedades da classe
+    private $id, $title, $price, $category_id, $steam_key, $description, $image;
+    
+    // Getters e Setters (Mantenha os seus se já os tiver)
     public function getId(){ return $this->id; }
     public function getTitle(){ return $this->title; }
     public function setTitle($v){ $this->title = $v; }
@@ -33,9 +19,40 @@ class Game {
     public function getImage(){ return $this->image; }
     public function setImage($v){ $this->image = $v; }
 
-    // salvar/atualizar
-    public function save(){
-        $pdo = db();
+    // --- MÉTODOS DE BANCO DE DADOS PADRONIZADOS ---
+
+    public static function all() {
+        $pdo = Database::getConnection();
+        $sql = "SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id ORDER BY g.title";
+        return $pdo->query($sql)->fetchAll();
+    }
+
+    public static function find($id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id WHERE g.id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+    
+    /**
+     * Busca múltiplos jogos por seus IDs.
+     * @param array $ids Array de IDs de jogos.
+     * @return array Lista de jogos encontrados.
+     */
+    public static function findByIds(array $ids) // <-- Mantivemos apenas UMA versão desta função
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $pdo = Database::getConnection();
+        $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+        $stmt = $pdo->prepare("SELECT * FROM games WHERE id IN ($placeholders)");
+        $stmt->execute($ids);
+        return $stmt->fetchAll();
+    }
+    
+    public function save() {
+        $pdo = Database::getConnection();
         if($this->id){
             $stmt = $pdo->prepare('UPDATE games SET title=?, price=?, category_id=?, steam_key=?, description=?, image=? WHERE id=?');
             $stmt->execute([$this->title, $this->price, $this->category_id, $this->steam_key, $this->description, $this->image, $this->id]);
@@ -44,34 +61,5 @@ class Game {
             $stmt->execute([$this->title, $this->price, $this->category_id, $this->steam_key, $this->description, $this->image]);
             $this->id = $pdo->lastInsertId();
         }
-    }
-
-    // todos os jogos
-    public static function all(){
-        $pdo = db();
-        $stmt = $pdo->query('SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id ORDER BY g.title');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // buscar jogo por id
-    public static function find($id){
-        $pdo = db();
-        $stmt = $pdo->prepare('SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id WHERE g.id = ?');
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // buscar jogos por categoria
-    public static function findByCategory($categoryId){
-        $pdo = db();
-        $stmt = $pdo->prepare('
-            SELECT g.*, c.name as category_name
-            FROM games g
-            LEFT JOIN categories c ON g.category_id = c.id
-            WHERE g.category_id = ?
-            ORDER BY g.title
-        ');
-        $stmt->execute([$categoryId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

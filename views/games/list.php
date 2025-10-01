@@ -1,35 +1,78 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 
-<div class="d-flex justify-content-between align-items-center">
-  <h2>Jogos</h2>
-  
-  <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-    <a class="btn btn-primary" href="index.php?route=games&action=create">Adicionar jogo</a>
-  <?php endif; ?>
-  
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Nossos Jogos</h1>
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+            <a class="btn btn-primary" href="index.php?route=games&action=create">Adicionar jogo</a>
+        <?php endif; ?>
+    </div>
+
+    <?php
+    // O loop de fora percorre as CATEGORIAS (ex: 'Ação', 'RPG')
+    foreach ($groupedGames as $categoryName => $gamesInCategory):
+    ?>
+
+        <section class="category-section">
+            <h2 class="category-title"><?php echo htmlentities($categoryName); ?></h2>
+
+            <div class="games-row">
+                <?php
+                // O loop de dentro percorre os JOGOS de cada categoria
+                foreach ($gamesInCategory as $game):
+                    
+                    // --- LÓGICA DA IMAGEM ---
+                    $imagePath = htmlspecialchars($game['image'] ?? '');
+                    // Verifica se o campo 'image' é um link completo.
+                    if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                        $imageUrl = $imagePath; // Se for um link, usa diretamente.
+                    } else if (!empty($imagePath)) {
+                        $imageUrl = 'uploads/' . $imagePath; // Se não for, assume que está na pasta uploads/.
+                    } else {
+                        $imageUrl = 'https://via.placeholder.com/280x150/1f2b57/a3b6e6?text=Sem+Imagem'; // Imagem padrão.
+                    }
+                    // --- FIM DA LÓGICA DA IMAGEM ---
+                ?>
+
+                    <a href="index.php?route=games&action=view&id=<?php echo $game['id']; ?>" class="card-link">
+                        <div class="game-card">
+                            <header class="card-header">
+                                <img src="<?php echo $imageUrl; ?>" alt="<?php echo htmlspecialchars($game['title']); ?>" class="card-img">
+                                
+                                <div class="steam-tag">
+                                    <i class="fa-brands fa-steam"></i> Steam
+                                </div>
+                            </header>
+                            <div class="card-body">
+                                <h3 class="card-title"><?php echo htmlspecialchars($game['title']); ?></h3>
+                                
+                                <?php // --- LÓGICA DE PREÇO COM DESCONTO (OPCIONAL) ---
+                                // Verifica se existe informação de desconto para mostrar o card de preço completo.
+                                if (isset($game['discount_percent']) && isset($game['final_price'])): ?>
+                                    <div class="card-pricing">
+                                        <span class="discount-tag">-<?php echo htmlspecialchars($game['discount_percent']); ?>%</span>
+                                        <span class="final-price">R$ <?php echo number_format($game['final_price'], 2, ',', '.'); ?></span>
+                                    </div>
+                                <?php else: // Se não tiver desconto, mostra o preço simples. ?>
+                                    <div class="card-pricing-simple">
+                                        <span class="final-price">R$ <?php echo number_format($game['price'], 2, ',', '.'); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                            </div>
+                        </div>
+                    </a>
+
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+    <?php endforeach; ?>
 </div>
 
-<table class="table table-striped mt-3">
-  <thead>
-    <tr>
-      <th>Título</th>
-      <th>Categoria</th>
-      <th>Preço</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach($games as $g): ?>
-      <tr>
-        <td><?php echo htmlentities($g['title']); ?></td>
-        <td><?php echo htmlentities($g['category_name'] ?? '—'); ?></td>
-        <td>R$ <?php echo number_format($g['price'],2,',','.'); ?></td>
-        <td>
-          <a class="btn btn-sm btn-outline-primary" href="index.php?route=games&action=view&id=<?php echo $g['id']; ?>">Ver</a>
-        </td>
-      </tr>
-    <?php endforeach; ?>
-  </tbody>
-</table>
+<form action="index.php?route=cart&action=add" method="post" class="mt-auto">
+    <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
+    <button type="submit" class="btn btn-primary w-100">Adicionar ao Carrinho</button>
+</form>
 
 <?php require __DIR__ . '/../layout/footer.php'; ?>

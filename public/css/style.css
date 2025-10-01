@@ -1,0 +1,477 @@
+    /* Importando uma fonte mais parecida com a da Nuuvem */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    /* NOVO: Paleta de cores inspirada na Nuuvem para fácil customização */
+    :root {
+        --cor-fundo: #0d1329;
+        --cor-componente: #1f2b57; /* Cor para header, footer e cards */
+        --cor-texto-principal: #ffffff;
+        --cor-texto-secundario: #a3b6e6;
+        --cor-desconto: #e53935; /* Vermelho vibrante */
+        --borda-card-hover: 1px solid var(--cor-texto-secundario);
+    }
+
+    /* Reset básico e configurações globais */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        /* ALTERADO: Nova fonte e cor de fundo */
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--cor-fundo);
+        color: var(--cor-texto-principal);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* --- Estilos do Cabeçalho --- */
+    .main-header {
+        /* ALTERADO: Nova cor, sem borda para um look mais flat */
+        background-color: var(--cor-componente);
+        padding: 15px 0;
+        border-bottom: none; 
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .main-header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 700;
+        /* ALTERADO: Cor do logo para branco */
+        color: var(--cor-texto-principal);
+        text-decoration: none;
+    }
+
+    .main-nav ul {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+    }
+
+    .main-nav a {
+        /* ALTERADO: Cores dos links */
+        color: var(--cor-texto-secundario);
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+
+    .main-nav a:hover {
+        color: var(--cor-texto-principal);
+    }
+    .navbar .container-fluid {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Caixa de busca e ícones não precisam de grandes mudanças */
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .search-box { display: flex; background-color: #333; border-radius: 20px; overflow: hidden; }
+    .search-box input { border: none; background: transparent; padding: 8px 15px; color: #fff; outline: none; }
+    .search-box button { background-color: var(--cor-componente); border: 1px solid var(--cor-texto-secundario); color: #fff; padding: 8px 12px; cursor: pointer; border-radius: 20px; margin-left: -20px; }
+    .cart-icon { font-size: 22px; color: #fff; }
+
+    /* --- Seção Hero Re-imaginada como Título de Seção --- */
+    .hero-section {
+        /* ALTERADO: Removido background para um estilo de título de seção */
+        background: none;
+        height: auto;
+        padding: 60px 20px 30px 20px;
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .hero-section h1 {
+        /* ALTERADO: Estilo do título principal da seção */
+        font-size: 36px;
+    }
+
+    .hero-section p {
+        /* ALTERADO: Estilo do subtítulo */
+        font-size: 18px;
+        color: var(--cor-texto-secundario);
+    }
+
+    /* Botão "Ver Mais" com estilo "fantasma" */
+    .cta-button {
+        background-color: transparent;
+        border: 1px solid var(--cor-texto-secundario);
+        color: var(--cor-texto-principal);
+        padding: 10px 25px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .cta-button:hover {
+        background-color: var(--cor-texto-secundario);
+        color: var(--cor-fundo);
+    }
+
+    /* --- Estilos da Grade de Produtos --- */
+    .products-section {
+        padding: 30px 0 60px 0;
+    }
+
+    /* Título de seção para os produtos */
+    .products-section h2 {
+        font-size: 32px;
+        margin-bottom: 30px;
+        text-align: left; /* Títulos alinhados à esquerda como na Nuuvem */
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .product-card {
+        /* ALTERADO: Cor, borda e posicionamento */
+        background-color: var(--cor-componente);
+        border-radius: 16px; /* Bordas mais arredondadas */
+        border: 1px solid transparent;
+        overflow: hidden;
+        transition: transform 0.3s ease, border 0.3s ease;
+        cursor: pointer;
+        position: relative; /* Necessário para a tag "Steam" */
+    }
+
+    .product-card:hover {
+        /* ALTERADO: Efeito de hover com borda, sem sombra */
+        transform: translateY(-8px);
+        border: var(--borda-card-hover);
+    }
+
+    /* NOVO: Tag "Steam" simulada com pseudo-elemento */
+    .product-card::before {
+        content: 'Steam';
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background-color: rgba(13, 19, 41, 0.7);
+        backdrop-filter: blur(5px);
+        color: var(--cor-texto-principal);
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 2;
+    }
+
+
+    .product-card img {
+        width: 100%;
+        height: 140px; /* Altura menor, mais proporcional */
+        object-fit: cover;
+        display: block;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    .product-info {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .product-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-price {
+        /* ALTERADO: Layout flex para alinhar desconto e preço */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto; /* Empurra o preço para o final do card */
+    }
+
+    /* Removido old-price, Nuuvem não mostra */
+    .old-price { display: none; }
+
+    /* ALTERADO: Estilo da tag de desconto */
+    .discount-tag {
+        background-color: var(--cor-desconto);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* ALTERADO: Estilo do preço final */
+    .new-price {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--cor-texto-principal);
+    }
+
+    /* --- Estilos do Rodapé --- */
+    .main-footer {
+        /* ALTERADO: Cor e remoção da borda */
+        background-color: var(--cor-componente);
+        padding: 40px 0;
+        margin-top: 60px;
+        border-top: none;
+    }
+
+    .main-footer .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    /* ... resto dos estilos do rodapé podem ser mantidos, apenas as cores mudam ... */
+    .social-links { display: flex; gap: 15px; }
+    .social-links a { color: var(--cor-texto-secundario); font-size: 20px; transition: color 0.3s ease; }
+    .social-links a:hover { color: var(--cor-texto-principal); }
+
+    :root {
+        --cor-fundo: #0d1329;
+        --cor-card: #1f2b57;
+        --cor-texto-principal: #ffffff;
+        --cor-texto-secundario: #a3b6e6;
+        --cor-botao: #4a69bd;
+        --cor-botao-hover: #3b5bb3;
+        --borda-radius-card: 16px;
+        --borda-card-hover: 1px solid var(--cor-texto-secundario);
+    }
+
+    /* Estilos Globais */
+    body {
+        background-color: var(--cor-fundo);
+        font-family: 'Poppins', sans-serif;
+        color: var(--cor-texto-principal);
+    }
+
+    h1 {
+        font-size: 36px;
+        margin-bottom: 40px;
+        padding-top: 40px;
+        text-align: center;
+    }
+
+    /* --- Estilo dos Cards de Jogo --- */
+
+    /* Sobrescrevendo a classe .card do Bootstrap */
+    .card {
+        background-color: var(--cor-card);
+        border-radius: var(--borda-radius-card) !important; /* !important para garantir a sobreposição */
+        border: 1px solid transparent;
+        transition: transform 0.3s ease, border 0.3s ease;
+        height: 100%; /* Faz todos os cards da mesma linha terem a mesma altura */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        border: var(--borda-card-hover);
+    }
+
+    /* Corpo do card */
+    .card-body {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Permite que o corpo do card cresça e ocupe o espaço */
+    }
+
+    /* Título do Jogo */
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--cor-texto-principal);
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Adiciona "..." se o título for muito longo */
+    }
+
+    /* Categoria e Preço */
+    .card-text {
+        color: var(--cor-texto-secundario);
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+    }
+
+    /* Estilo específico para o preço para dar mais destaque */
+    .card-text:last-of-type {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--cor-texto-principal);
+        margin-top: auto; /* Empurra o preço e o botão para o final do card */
+        margin-bottom: 20px;
+    }
+
+    /* Botão "Ver" */
+    .btn-primary {
+        background-color: var(--cor-botao);
+        border-color: var(--cor-botao);
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 10px 15px;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--cor-botao-hover);
+        border-color: var(--cor-botao-hover);
+    }
+    /* pagina de login */
+    /* --- Estilo para Formulários (Login / Registro) --- */
+
+    /* Container do formulário */
+    .form-container {
+        max-width: 450px;
+        margin: 60px auto; /* Centraliza e adiciona espaço em cima/baixo */
+        padding: 40px;
+        background-color: var(--cor-card); /* Reutiliza a cor de fundo dos cards */
+        border-radius: var(--borda-radius-card); /* Reutiliza o raio da borda */
+    }
+
+    /* Título do formulário (ex: "Login") */
+    .form-container h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 30px;
+        color: var(--cor-texto-principal);
+    }
+
+    /* Rótulos (Labels: "Email", "Senha") */
+    .form-container .form-label, 
+    .form-container label { /* Compatível com <label> do Bootstrap e label normal */
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--cor-texto-secundario);
+        margin-bottom: 8px;
+    }
+
+    /* Campos de Input (email, senha) */
+    .form-container .form-control {
+        background-color: var(--cor-fundo); /* Fundo igual ao da página */
+        border: 1px solid var(--cor-card);
+        border-radius: 8px;
+        padding: 12px 15px;
+        color: var(--cor-texto-principal);
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Efeito ao clicar no campo (foco) */
+    .form-container .form-control:focus {
+        background-color: var(--cor-fundo);
+        color: var(--cor-texto-principal);
+        border-color: var(--cor-texto-secundario);
+        box-shadow: 0 0 0 3px rgba(163, 182, 230, 0.2); /* Sombra suave com cor secundária */
+    }
+
+    /* Botão de submissão do formulário */
+    .form-container .btn-primary {
+        width: 100%;
+        background-color: var(--cor-botao);
+        border-color: var(--cor-botao);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 12px;
+        margin-top: 20px;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .form-container .btn-primary:hover {
+        background-color: var(--cor-botao-hover);
+        border-color: var(--cor-botao-hover);
+    }
+
+    /* --- Estilo para Seções de Categoria e Fileiras de Jogos --- */
+
+    .category-section {
+        margin-bottom: 50px; /* Espaço entre as seções de categoria */
+    }
+
+    .category-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--cor-card);
+    }
+
+    /* A MÁGICA ACONTECE AQUI */
+    .games-row {
+        display: flex; /* 1. Alinha os cards lado a lado */
+        overflow-x: auto; /* 2. Adiciona a barra de rolagem horizontal se necessário */
+        gap: 25px; /* 3. Espaçamento entre os cards */
+        padding: 10px 5px 20px 5px; /* Espaço extra para a barra de rolagem não ficar colada */
+    }
+
+    /* Ajuste no card para funcionar bem na fileira horizontal */
+    .games-row .game-card {
+        flex: 0 0 280px; /* Impede que o card encolha ou estique, mantendo um tamanho fixo */
+        width: 280px;
+    }
+
+    /* BÔNUS: Estilizando a barra de rolagem para combinar com o tema escuro */
+    .games-row::-webkit-scrollbar {
+        height: 12px;
+    }
+
+    .games-row::-webkit-scrollbar-track {
+        background: var(--cor-fundo);
+        border-radius: 10px;
+    }
+
+    .games-row::-webkit-scrollbar-thumb {
+        background-color: var(--cor-card);
+        border-radius: 10px;
+        border: 3px solid var(--cor-fundo);
+    }
+
+    .games-row::-webkit-scrollbar-thumb:hover {
+        background-color: var(--cor-texto-secundario);
+    }
+
+
+    /* Estilo para o campo <input type="file"> (Imagem) */
+    .form-container input[type="file"].form-control {
+        color: var(--cor-texto-secundario);
+    }
+
+    /* Customização do texto do seletor de arquivo */
+    .form-container input[type="file"].form-control::file-selector-button {
+        background-color: var(--cor-botao);
+        color: var(--cor-texto-principal);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-right: 15px;
+    }
+
+    .form-container input[type="file"].form-control::file-selector-button:hover {
+        background-color: var(--cor-botao-hover);
+    }

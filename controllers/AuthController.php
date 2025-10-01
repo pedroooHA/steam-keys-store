@@ -43,6 +43,7 @@ class AuthController {
         $u->setName($name);
         $u->setEmail($email);
         $u->setPasswordHash(password_hash($password, PASSWORD_DEFAULT));
+        $u->setRole('user');
         $u->save();
 
         $_SESSION['user_id'] = $u->getId();
