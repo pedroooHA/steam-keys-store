@@ -1,13 +1,11 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Nossos Jogos</h1>
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-            <a class="btn btn-primary" href="index.php?route=games&action=create">Adicionar jogo</a>
-        <?php endif; ?>
-    </div>
-
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Nossos Jogos</h1>
+    <?php if (!empty($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <a class="btn btn-primary" href="index.php?route=games&action=create">Adicionar jogo</a>
+    <?php endif; ?>
+</div>
     <?php
     // O loop de fora percorre as CATEGORIAS (ex: 'Ação', 'RPG')
     foreach ($groupedGames as $categoryName => $gamesInCategory):
