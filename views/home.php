@@ -41,4 +41,50 @@
     </div>
 </div>
 
+
+
+<style>
+.card-body.d-flex.flex-column {
+    background-color: black;
+}
+
+    /* Adicione ao seu CSS existente */
+.game-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.card-img {
+    transition: transform 0.5s ease;
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.game-card:hover .card-img {
+    transform: scale(1.05);
+}
+
+.steam-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #1b2838, #2a475e);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+</style>
+
 <?php require __DIR__ . '/layout/footer.php'; ?>
