@@ -354,6 +354,7 @@
     font-weight: 700;
     font-size: 2.2rem;
     line-height: 1.2;
+    padding: 0px;
 }
 
 .rating-section .stars {

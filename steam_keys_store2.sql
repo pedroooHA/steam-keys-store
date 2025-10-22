@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/09/2025 às 15:40
+-- Tempo de geração: 22/10/2025 às 03:05
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -63,12 +63,12 @@ CREATE TABLE `games` (
 --
 
 INSERT INTO `games` (`id`, `title`, `price`, `category_id`, `steam_key`, `description`, `created_at`, `image`) VALUES
-(1, 'Exemplo Jogo 1', 19.99, 1, 'AAAA-BBBB-CCCC', 'Descrição do jogo 1', '2025-09-25 00:53:48', NULL),
-(2, 'Exemplo Jogo 2', 9.99, 2, 'DDDD-EEEE-FFFF', 'Descrição do jogo 2', '2025-09-25 00:53:48', NULL),
-(3, 'Elden ring', 12.00, 2, '134133423423', 'Jogo de rpg de estrategia', '2025-09-25 01:23:10', NULL),
-(4, 'R6', 75.99, 1, 'aaaaaaaaaaaaaaaaa', 'jogo de tiro', '2025-09-25 02:35:46', NULL),
-(5, 'sssss', 12.00, 1, 'ssss', 'ssss', '2025-09-25 02:43:53', NULL),
-(6, '1231231', 12.23, 1, '12321312', 'sw2d2d', '2025-09-25 02:45:41', NULL);
+(1, 'Elden Ring', 199.00, 2, 'Z9Y8X-7W6V5-U4T3S', 'Um grande RPG de ação em mundo aberto criado pela FromSoftware com design de Hidetaka Miyazaki e colaboração de George R.R. Martin.', '2025-09-25 00:53:48', 'https://upload.wikimedia.org/wikipedia/pt/0/0d/Elden_Ring_capa.jpg'),
+(2, 'God of War Ragnarök', 159.00, 1, 'ZXCVB-NMQWE-RTYUI', 'Jogo de ação-aventura da franquia God of War, onde Kratos e Atreus enfrentam mitologia nórdica e eventos de fim-do-mundo (“Ragnarök”).', '2025-09-25 00:53:48', 'https://upload.wikimedia.org/wikipedia/pt/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg'),
+(3, 'Marvel’s Spider‑Man 2', 159.00, 1, 'LDAS-DJIO-APOS', 'Jogo de super-herói com os personagens Peter Parker e Miles Morales, mundo aberto em Nova York, com combate, narrativa cinematográfica e viagens de aranha.', '2025-09-25 01:23:10', 'https://image.api.playstation.com/vulcan/ap/rnd/202306/1219/97e9f5fa6e50c185d249956c6f198a2652a9217e69a59ecd.jpg'),
+(4, 'Horizon Forbidden West', 99.00, 1, 'MOPA-KODP-KLAM', 'Sequência de Horizon Zero Dawn onde a protagonista Aloy explora paisagens pós-apocalípticas, enfrenta máquinas e descobre mistérios.', '2025-09-25 02:35:46', 'https://upload.wikimedia.org/wikipedia/en/thumb/6/69/Horizon_Forbidden_West_cover_art.jpg/250px-Horizon_Forbidden_West_cover_art.jpg'),
+(5, 'The Legend of Zelda: Tears of the Kingdom', 129.00, 1, 'JOSP-NXIO-NXKI', 'Sequência de The Legend of Zelda: Breath of the Wild, ampla exploração em céu e terra, nova mecânica de construção, física expansiva.', '2025-09-25 02:43:53', 'https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg'),
+(6, 'Minecraft', 59.00, 1, 'UOIP-XZXC-KOPC', 'Jogo muito popular de mundo aberto onde se pode explorar, construir e sobreviver, com apelo amplo de público.', '2025-09-25 02:45:41', 'https://upload.wikimedia.org/wikipedia/pt/9/9c/Minecraft_capa.png');
 
 -- --------------------------------------------------------
 
@@ -126,7 +126,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de tabela `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `games`
