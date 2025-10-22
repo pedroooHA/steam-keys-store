@@ -46,6 +46,7 @@
 <style>
 .card-body.d-flex.flex-column {
     background-color: black;
+    color: white
 }
 
     /* Adicione ao seu CSS existente */
@@ -66,7 +67,8 @@
     transition: transform 0.5s ease;
     height: 200px;
     object-fit: cover;
-    width: 100%;
+    width: 10%;
+    
 }
 
 .game-card:hover .card-img {

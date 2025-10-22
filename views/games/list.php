@@ -19,18 +19,24 @@
                 // O loop de dentro percorre os JOGOS de cada categoria
                 foreach ($gamesInCategory as $game):
                     
-                    // --- LÓGICA DA IMAGEM ---
-                    $imagePath = htmlspecialchars($game['image'] ?? '');
-                    // Verifica se o campo 'image' é um link completo.
-                    if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
-                        $imageUrl = $imagePath; // Se for um link, usa diretamente.
-                    } else if (!empty($imagePath)) {
-                        $imageUrl = 'uploads/' . $imagePath; // Se não for, assume que está na pasta uploads/.
-                    } else {
-                        $imageUrl = 'https://via.placeholder.com/280x150/1f2b57/a3b6e6?text=Sem+Imagem'; // Imagem padrão.
-                    }
-                    // --- FIM DA LÓGICA DA IMAGEM ---
+                    // --- LÓGICA DA IMAGEM CORRIGIDA ---
+$imagePath = htmlspecialchars($game['image'] ?? '');
+// Verifica se o campo 'image' é um link completo.
+if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+    $imageUrl = $imagePath; // Se for um link válido, usa diretamente.
+} else if (!empty($imagePath)) {
+    $imageUrl = 'uploads/'. $imagePath; // Se não for URL, assume que está na pasta uploads/.
+} else {
+    $imageUrl = 'https://via.placeholder.com/280x150/1f2b57/a3b6e6?text=Sem+Imagem'; // Imagem padrão.
+}
+// --- FIM DA LÓGICA DA IMAGEM ---
+                    
                 ?>
+
+                <img src="<?php echo $imageUrl; ?>" 
+                 style="max-width: 280px; max-height: 150px; width: auto; height: auto;"
+                  alt="Imagem do jogo"
+                 onerror="this.src='https:via.placeholder.com/280x150/1f2b57/a3b6e6?text=Sem+Imagem'">
 
                     <a href="index.php?route=games&action=view&id=<?php echo $game['id']; ?>" class="card-link">
                         <div class="game-card">
@@ -66,6 +72,7 @@
         </section>
 
     <?php endforeach; ?>
+
 </div>
 
 <form action="index.php?route=cart&action=add" method="post" class="mt-auto">
