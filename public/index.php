@@ -72,6 +72,7 @@ switch($route){
         else $c->list();
         break;
 
+
     // 👇 ROTA DO CARRINHO CORRIGIDA E NO LUGAR CERTO 👇
     case 'cart':
         $c = new CartController();

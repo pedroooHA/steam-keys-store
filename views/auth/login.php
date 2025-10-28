@@ -305,7 +305,7 @@
         </div>
         
         <div class="login-footer">
-            <p>Não tem uma conta? <a href="#">Criar agora</a></p>
+            <p>Não tem uma conta? <a href="http://localhost/steam-keys-store/public/index.php?route=register">Criar agora</a></p>
         </div>
     </div>
 </body>

@@ -43,7 +43,7 @@
                             $imageUrl = 'https://via.placeholder.com/100x75/1f2b57/a3b6e6?text=Sem+Imagem';
                         }
                         
-                        $subtotal = $item['price'] * $item['quantity'];
+                        $subtotal = $item['price'] * $item['quantidade'];
                     ?>
                         <div class="cart-item-card" data-game-id="<?php echo $item['id']; ?>">
                             <div class="row align-items-center">
@@ -69,7 +69,7 @@
                                         <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <span class="quantity-display mx-2"><?php echo $item['quantity']; ?></span>
+                                        <span class="quantity-display mx-2"><?php echo $item['quantidade']; ?></span>
                                         <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="increase">
                                             <i class="fas fa-plus"></i>
                                         </button>
@@ -196,6 +196,25 @@
 
 .cart-item-title {
     color: var(--cor-texto-principal);
+    font-weight: 600;
+}
+
+h5.cart-item-title.mb-1 {
+    color: white;
+}
+
+span.cart-item-price {
+    color: white;
+    font-weight: 600;
+}
+
+span.cart-item-subtotal {
+    color: white;
+    font-weight: 600;
+}
+
+span.quantity-display.mx-2 {
+    color: white;
     font-weight: 600;
 }
 

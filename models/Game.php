@@ -35,7 +35,7 @@ class Game {
     }
     
     /**
-     * Busca múltiplos jogos por seus IDs.
+     * Busca múltiplos jogos por seus IDs.a
      * @param array $ids Array de IDs de jogos.
      * @return array Lista de jogos encontrados.
      */

@@ -6,7 +6,55 @@
     <title>Steam Keys Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
+   
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg custom-header">
+        <div class="container-fluid">
+            <a class="navbar-brand logo" href="index.php">
+                <i class="fas fa-gem"></i>
+                BlackLabel Store
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto">
+        <?php if(!empty($_SESSION['user_id'])): 
+            $me = User::findById($_SESSION['user_id']);
+        ?>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=games">Categorias</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=games">Lista de desejos</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=logout">Sair</a></li>
+        <?php else: ?>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=register">Cadastrar</a></li>
+        <?php endif; ?>
+      </ul>
+
+                <!-- Caixa de busca -->
+                <form class="search-form" role="search" action="index.php?route=search" method="GET">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input class="form-control" type="search" name="q" placeholder="Buscar jogos..." aria-label="Search">
+                    <button class="btn" type="submit"><i class="fas fa-arrow-right"></i></button>
+                </form>
+                
+                <!-- Ícone do carrinho -->
+                <a href="index.php?route=cart" class="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Carrinho</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+ <style>
         * {
             margin: 0;
             padding: 0;
@@ -149,6 +197,11 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
+        .fas.fa-gem {
+            font-family: 'Font Awesome 5 Free';
+            padding-top: 20px;
+}
+
         @media (max-width: 991px) {
             .search-form {
                 margin: 10px 0;
@@ -179,49 +232,3 @@
             }
         }
     </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg custom-header">
-        <div class="container-fluid">
-            <a class="navbar-brand logo" href="index.php">
-                <i class="fas fa-gamepad"></i>
-                Steam Keys Store
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Usuário logado -->
-                    <li class="nav-item"><a class="nav-link" href="index.php?route=games">Jogos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php?route=categories">Categorias</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php?route=login.php">Sair</a></li>
-                    
-                    <!-- Usuário não logado (comentado para demonstração) -->
-                    <!--
-                    <li class="nav-item"><a class="nav-link" href="index.php?route=login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php?route=register">Cadastrar</a></li>
-                    -->
-                </ul>
-                
-                <!-- Caixa de busca -->
-                <form class="search-form" role="search" action="index.php?route=search" method="GET">
-                    <span class="search-icon"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="search" name="q" placeholder="Buscar jogos..." aria-label="Search">
-                    <button class="btn" type="submit"><i class="fas fa-arrow-right"></i></button>
-                </form>
-                
-                <!-- Ícone do carrinho -->
-                <a href="index.php?route=cart" class="cart-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Carrinho</span>
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

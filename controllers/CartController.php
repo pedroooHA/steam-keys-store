@@ -11,7 +11,7 @@ class CartController
             // Usuário LOGADO: Busca do Banco de Dados
             $pdo = Database::getConnection();
             $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
-            $stmt = $pdo->prepare("SELECT g.*, ci.quantity FROM cart_items ci JOIN games g ON ci.game_id = g.id WHERE ci.cart_id = ?");
+            $stmt = $pdo->prepare("SELECT g.*, ic.quantidade FROM itens_carrinho ic JOIN games g ON ic.id_jogo = g.id WHERE ic.id_carrinho = ?");
             $stmt->execute([$cart['id']]);
             $cartItems = $stmt->fetchAll();
         } else {
@@ -20,13 +20,14 @@ class CartController
                 $gameIds = array_keys($_SESSION['cart']);
                 $gamesFromDb = Game::findByIds($gameIds);
                 foreach ($gamesFromDb as $game) {
-                    $cartItems[] = array_merge($game, ['quantity' => $_SESSION['cart'][$game['id']]]);
+                    // CORREÇÃO: usar 'quantidade' em vez de 'quantity'
+                    $cartItems[] = array_merge($game, ['quantidade' => $_SESSION['cart'][$game['id']]]);
                 }
             }
         }
         
         foreach ($cartItems as $item) {
-            $total += $item['price'] * $item['quantity'];
+            $total += $item['price'] * $item['quantidade'];
         }
 
         require_once dirname(__DIR__) . '/views/cart/show.php';
@@ -41,15 +42,15 @@ class CartController
             // Usuário LOGADO
             $pdo = Database::getConnection();
             $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
-            $stmt = $pdo->prepare("SELECT * FROM cart_items WHERE cart_id = ? AND game_id = ?");
+            $stmt = $pdo->prepare("SELECT * FROM itens_carrinho WHERE id_carrinho = ? AND id_jogo = ?");
             $stmt->execute([$cart['id'], $gameId]);
             $item = $stmt->fetch();
 
             if ($item) {
-                $stmt = $pdo->prepare("UPDATE cart_items SET quantity = quantity + 1 WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE itens_carrinho SET quantidade = quantidade + 1 WHERE id = ?");
                 $stmt->execute([$item['id']]);
             } else {
-                $stmt = $pdo->prepare("INSERT INTO cart_items (cart_id, game_id, quantity) VALUES (?, ?, 1)");
+                $stmt = $pdo->prepare("INSERT INTO itens_carrinho (id_carrinho, id_jogo, quantidade) VALUES (?, ?, 1)");
                 $stmt->execute([$cart['id'], $gameId]);
             }
         } else {
@@ -60,22 +61,23 @@ class CartController
         header('Location: index.php?route=cart');
         exit;
     }
-    // Em controllers/CartController.php
-public function remove() {
-    $gameId = $_GET['game_id'] ?? null;
-    if (!$gameId) {
+
+    public function remove() {
+        $gameId = $_GET['game_id'] ?? null;
+        if (!$gameId) {
+            header('Location: index.php?route=cart');
+            exit;
+        }
+        if (isset($_SESSION['user_id'])) {
+            $pdo = Database::getConnection();
+            $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
+            // CORREÇÃO: usar nomes em português
+            $stmt = $pdo->prepare("DELETE FROM itens_carrinho WHERE id_carrinho = ? AND id_jogo = ?");
+            $stmt->execute([$cart['id'], $gameId]);
+        } else {
+            unset($_SESSION['cart'][$gameId]);
+        }
         header('Location: index.php?route=cart');
         exit;
     }
-    if (isset($_SESSION['user_id'])) {
-        $pdo = Database::getConnection();
-        $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
-        $stmt = $pdo->prepare("DELETE FROM cart_items WHERE cart_id = ? AND game_id = ?");
-        $stmt->execute([$cart['id'], $gameId]);
-    } else {
-        unset($_SESSION['cart'][$gameId]);
-    }
-    header('Location: index.php?route=cart');
-    exit;
-}
 }
