@@ -10,7 +10,7 @@ class Cart
     public static function findOrCreateByUserId($userId)
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT * FROM carts WHERE id_utilizador = ?");
+        $stmt = $pdo->prepare("SELECT * FROM cart WHERE id_usuario = ?");
         $stmt->execute([$userId]);
         $cart = $stmt->fetch();
 
@@ -18,7 +18,7 @@ class Cart
             return $cart;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO carts (id_utilizador) VALUES (?)");
+        $stmt = $pdo->prepare("INSERT INTO cart (id_usuario) VALUES (?)");
         $stmt->execute([$userId]);
 
         return [

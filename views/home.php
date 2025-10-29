@@ -71,6 +71,22 @@
     
 }
 
+h3.card-title {
+   margin: 2%;
+   font-family:Georgia, 'Times New Roman', Times, serif
+}
+
+span.final-price {
+    margin: 2%;
+}
+
+button.btn.btn-primary.w-100:hover{
+    background-color: white;
+    color: black;
+    transform: scale(1.0);
+
+}
+
 .game-card:hover .card-img {
     transform: scale(1.05);
 }
