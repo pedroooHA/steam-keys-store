@@ -11,21 +11,25 @@ class CartController
      */
     public function show()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $cartItems = [];
         $total = 0;
 
         // Usuário logado
         if (isset($_SESSION['user_id'])) {
             $pdo = Database::getConnection();
-            $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
 
+            // Busca os jogos do carrinho do usuário logado
             $stmt = $pdo->prepare("
-                SELECT g.*, ic.quantidade 
-                FROM itens_carrinho ic
-                JOIN games g ON ic.id_jogo = g.id
-                WHERE ic.id_carrinho = ?
+                SELECT g.*, c.quantidade, c.preco_unitario
+                FROM cart c
+                JOIN games g ON c.id_jogo = g.id
+                WHERE c.id_usuario = ?
             ");
-            $stmt->execute([$cart['id']]);
+            $stmt->execute([$_SESSION['user_id']]);
             $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } 
         // Visitante (sem login)
@@ -44,7 +48,10 @@ class CartController
 
         // Calcular total do carrinho
         foreach ($cartItems as $item) {
-            $total += $item['price'] * $item['quantidade'];
+            $price = isset($item['price']) ? $item['price'] :
+                     (isset($item['preco']) ? $item['preco'] :
+                     (isset($item['preco_unitario']) ? $item['preco_unitario'] : 0));
+            $total += $price * $item['quantidade'];
         }
 
         require_once dirname(__DIR__) . '/views/cart/show.php';
@@ -55,6 +62,10 @@ class CartController
      */
     public function add()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $gameId = $_POST['game_id'] ?? null;
         if (!$gameId) {
             header('Location: index.php');
@@ -64,29 +75,34 @@ class CartController
         // Usuário logado
         if (isset($_SESSION['user_id'])) {
             $pdo = Database::getConnection();
-            $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
 
             // Verifica se o jogo já está no carrinho
             $stmt = $pdo->prepare("
-                SELECT * FROM itens_carrinho 
-                WHERE id_carrinho = ? AND id_jogo = ?
+                SELECT * FROM cart 
+                WHERE id_usuario = ? AND id_jogo = ?
             ");
-            $stmt->execute([$cart['id'], $gameId]);
+            $stmt->execute([$_SESSION['user_id'], $gameId]);
             $item = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($item) {
                 $stmt = $pdo->prepare("
-                    UPDATE itens_carrinho 
+                    UPDATE cart 
                     SET quantidade = quantidade + 1 
                     WHERE id = ?
                 ");
                 $stmt->execute([$item['id']]);
             } else {
+                // Busca o preço atual do jogo
+                $gstmt = $pdo->prepare("SELECT price FROM games WHERE id = ?");
+                $gstmt->execute([$gameId]);
+                $g = $gstmt->fetch(PDO::FETCH_ASSOC);
+                $price = $g ? ($g['price'] ?? $g['preco'] ?? 0) : 0;
+
                 $stmt = $pdo->prepare("
-                    INSERT INTO itens_carrinho (id_carrinho, id_jogo, quantidade)
-                    VALUES (?, ?, 1)
+                    INSERT INTO cart (id_usuario, id_jogo, quantidade, preco_unitario)
+                    VALUES (?, ?, 1, ?)
                 ");
-                $stmt->execute([$cart['id'], $gameId]);
+                $stmt->execute([$_SESSION['user_id'], $gameId, $price]);
             }
         } 
         // Visitante
@@ -107,6 +123,10 @@ class CartController
      */
     public function remove()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $gameId = $_GET['game_id'] ?? null;
         if (!$gameId) {
             header('Location: index.php?route=cart');
@@ -116,29 +136,27 @@ class CartController
         // Usuário logado
         if (isset($_SESSION['user_id'])) {
             $pdo = Database::getConnection();
-            $cart = Cart::findOrCreateByUserId($_SESSION['user_id']);
 
-            // Busca o item
             $stmt = $pdo->prepare("
-                SELECT * FROM itens_carrinho 
-                WHERE id_carrinho = ? AND id_jogo = ?
+                SELECT * FROM cart 
+                WHERE id_usuario = ? AND id_jogo = ?
             ");
-            $stmt->execute([$cart['id'], $gameId]);
+            $stmt->execute([$_SESSION['user_id'], $gameId]);
             $item = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($item && $item['quantidade'] > 1) {
                 $stmt = $pdo->prepare("
-                    UPDATE itens_carrinho 
+                    UPDATE cart 
                     SET quantidade = quantidade - 1 
                     WHERE id = ?
                 ");
                 $stmt->execute([$item['id']]);
             } else {
                 $stmt = $pdo->prepare("
-                    DELETE FROM itens_carrinho 
-                    WHERE id_carrinho = ? AND id_jogo = ?
+                    DELETE FROM cart 
+                    WHERE id_usuario = ? AND id_jogo = ?
                 ");
-                $stmt->execute([$cart['id'], $gameId]);
+                $stmt->execute([$_SESSION['user_id'], $gameId]);
             }
         } 
         // Visitante
