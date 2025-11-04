@@ -86,6 +86,19 @@ switch($route){
         }
         break;
 
+    case 'wishlist':
+        $c = new WishlistController();
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'show';
+        
+        if ($action === 'add' && $method === 'POST') {
+            $c->add();
+        } elseif ($action === 'remove') {
+            $c->remove();
+        } else {
+            $c->show();
+        }
+        break;
+
     default:
         http_response_code(404);
         echo 'Página não encontrada';

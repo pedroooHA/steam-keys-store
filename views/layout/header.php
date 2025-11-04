@@ -26,7 +26,7 @@
             $me = User::findById($_SESSION['user_id']);
         ?>
           <li class="nav-item"><a class="nav-link" href="index.php?route=games">Categorias</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=games">Lista de desejos</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?route=wishlist">Lista de desejos</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?route=logout">Sair</a></li>
         <?php else: ?>
           <li class="nav-item"><a class="nav-link" href="index.php?route=login">Login</a></li>

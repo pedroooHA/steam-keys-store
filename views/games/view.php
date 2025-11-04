@@ -109,20 +109,26 @@
 
                 <!-- Ações -->
                 <div class="action-buttons mb-4">
-                    <form action="index.php?route=cart&action=add" method="post" class="d-grid gap-2">
-                        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
-                        
-                        <button type="submit" class="btn btn-primary btn-lg py-3">
-                            <i class="fas fa-shopping-cart me-2"></i>
-                            Adicionar ao Carrinho - R$ <?php echo number_format($game['price'], 2, ',', '.'); ?>
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-secondary">
-                            <i class="fas fa-heart me-2"></i>
-                            Adicionar à Lista de Desejos
-                        </button>
-                    </form>
-                </div>
+    <!-- Formulário do CARRINHO -->
+    <form action="index.php?route=cart&action=add" method="post" class="d-grid gap-2">
+        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
+        
+        <button type="submit" class="btn btn-primary btn-lg py-3">
+            <i class="fas fa-shopping-cart me-2"></i>
+            Adicionar ao Carrinho - R$ <?php echo number_format($game['price'], 2, ',', '.'); ?>
+        </button>
+    </form>
+
+    <!-- Formulário da WISHLIST (CORRIGIDO) -->
+    <form action="index.php?route=wishlist&action=add" method="post" class="d-grid gap-2">
+        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
+        
+        <button type="submit" class="btn btn-outline-secondary btn-lg py-3">
+            <i class="fas fa-heart me-2"></i>
+            Adicionar à Lista de Desejos
+        </button>
+    </form>
+</div>
 
                 <!-- Informações Rápidas -->
                 <div class="quick-info mb-4">
