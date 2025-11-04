@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Steam Keys Store</title>
+    <title>Nexus Keys</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -398,7 +398,7 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p>&copy; 2025 Steam Keys Store. Todos os direitos reservados.</p>
+            <p>&copy; 2025 Nexus Keys. Todos os direitos reservados.</p>
             <div class="social-links">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>

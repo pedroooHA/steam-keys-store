@@ -32,7 +32,7 @@
             <!-- Lista de Itens -->
             <div class="col-lg-8">
                 <div class="cart-items-container">
-                    <?php foreach($cartItems as $item): 
+                    <?php foreach($cartItems as $item):
                         // Lógica inteligente para a imagem
                         $imagePath = htmlspecialchars($item['image'] ?? '');
                         if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
@@ -42,28 +42,29 @@
                         } else {
                             $imageUrl = 'https://via.placeholder.com/100x75/1f2b57/a3b6e6?text=Sem+Imagem';
                         }
-                        
-                        $subtotal = $item['price'] * $item['quantidade'];
+
+                        $price = $item['price'] ?? $item['preco'] ?? $item['preco_unitario'] ?? 0;
+                        $subtotal = $price * $item['quantidade'];
                     ?>
                         <div class="cart-item-card" data-game-id="<?php echo $item['id']; ?>">
                             <div class="row align-items-center">
                                 <div class="col-md-2">
-                                    <img src="<?php echo $imageUrl; ?>" 
-                                         alt="<?php echo htmlspecialchars($item['title']); ?>" 
+                                    <img src="<?php echo $imageUrl; ?>"
+                                         alt="<?php echo htmlspecialchars($item['title']); ?>"
                                          class="cart-item-image rounded">
                                 </div>
-                                
+
                                 <div class="col-md-4">
                                     <h5 class="cart-item-title mb-1"><?php echo htmlspecialchars($item['title']); ?></h5>
                                     <div class="platform-badge">
                                         <i class="fa-brands fa-steam me-1"></i>Steam
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-2 text-center">
-                                    <span class="cart-item-price">R$ <?php echo number_format($item['price'], 2, ',', '.'); ?></span>
+                                    <span class="cart-item-price">R$ <?php echo number_format($price, 2, ',', '.'); ?></span>
                                 </div>
-                                
+
                                 <div class="col-md-2">
                                     <div class="quantity-controls">
                                         <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease">
@@ -75,49 +76,51 @@
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-1 text-end">
                                     <span class="cart-item-subtotal">R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></span>
                                 </div>
-                                
+
                                 <div class="col-md-1 text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-item-btn" 
-                                            data-game-id="<?php echo $item['id']; ?>"
-                                            title="Remover item">
+                                    <!-- Link que chama a rota remove. Tem data-game-id e href -->
+                                    <a href="index.php?route=cart&action=remove&game_id=<?php echo $item['id']; ?>"
+                                       class="btn btn-sm btn-outline-danger remove-item-link"
+                                       data-game-id="<?php echo $item['id']; ?>"
+                                       title="Remover item">
                                         <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
             </div>
-            
+
             <!-- Resumo do Pedido -->
             <div class="col-lg-4">
                 <div class="order-summary-card">
                     <h4 class="summary-title">
                         <i class="fas fa-receipt me-2"></i>Resumo do Pedido
                     </h4>
-                    
+
                     <div class="summary-details">
                         <div class="summary-row">
                             <span>Subtotal</span>
                             <span>R$ <?php echo number_format($total, 2, ',', '.'); ?></span>
                         </div>
-                        
+
                         <div class="summary-row">
                             <span>Descontos</span>
                             <span class="text-success">- R$ 0,00</span>
                         </div>
-                        
+
                         <div class="summary-row">
                             <span>Taxas</span>
                             <span class="text-muted">Grátis</span>
                         </div>
-                        
+
                         <hr>
-                        
+
                         <div class="summary-row total-row">
                             <strong>Total</strong>
                             <strong style="color: var(--cor-desconto); font-size: 1.2rem;">
@@ -125,22 +128,22 @@
                             </strong>
                         </div>
                     </div>
-                    
+
                     <div class="summary-actions mt-4">
                         <button class="btn btn-success btn-lg w-100 checkout-btn">
                             <i class="fas fa-lock me-2"></i>Finalizar Compra
                         </button>
-                        
+
                         <div class="security-badges mt-3 text-center">
                             <small class="text-muted">
                                 <i class="fas fa-shield-alt me-1"></i>
-                                Compra 100% segura • 
+                                Compra 100% segura •
                                 <i class="fas fa-lock me-1"></i>
                                 Pagamento criptografado
                             </small>
                         </div>
                     </div>
-                    
+
                     <!-- Recomendações -->
                     <div class="recommendations mt-4">
                         <h6 class="mb-3">Quem comprou este jogo também comprou:</h6>
@@ -163,6 +166,9 @@
 </div>
 
 <?php require __DIR__ . '/../layout/footer.php'; ?>
+
+<!-- SweetAlert2 (modal bonito) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 /* Estilos para o Carrinho */
@@ -290,7 +296,7 @@ text-muted {
 
 .checkout-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(58, 74, 138, 0.4);
+    box-shadow: 0 6px 20px rgba(58,74,138,0.4);
 }
 
 .security-badges {
@@ -316,14 +322,18 @@ text-muted {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.remove-item-btn {
-    transition: all 0.3s ease;
+.remove-item-link {
+    transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
-.remove-item-btn:hover {
+.remove-item-link:hover {
     background-color: #dc3545;
     color: white;
-    transform: scale(1.1);
+    transform: scale(1.25);
+}
+
+.remove-item-link:active {
+    transform: scale(1.15);
 }
 
 .quantity-btn {
@@ -340,81 +350,115 @@ text-muted {
     .cart-item-card .row > div {
         margin-bottom: 1rem;
     }
-    
+
     .cart-item-card .row > div:last-child {
         margin-bottom: 0;
     }
-    
+
     .quantity-controls {
         justify-content: flex-start;
     }
+}
+
+/* SweetAlert customização para combinar com tema */
+.swal2-popup {
+  background: #1e1b29 !important;
+  color: #f3e8ff !important;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 12px !important;
+}
+.swal2-title { font-size: 1.2rem; font-weight: 600; }
+.swal2-confirm, .swal2-cancel {
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  font-weight: 600;
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Controles de Quantidade
-    document.querySelectorAll('.quantity-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const action = this.getAttribute('data-action');
-            const itemCard = this.closest('.cart-item-card');
-            const quantityDisplay = itemCard.querySelector('.quantity-display');
-            const gameId = itemCard.getAttribute('data-game-id');
-            let quantity = parseInt(quantityDisplay.textContent);
-            
-            if (action === 'increase') {
-                quantity++;
-            } else if (action === 'decrease' && quantity > 1) {
-                quantity--;
-            }
-            
-            if (quantity >= 1) {
-                // Atualizar via AJAX
-                updateCartQuantity(gameId, quantity);
-                quantityDisplay.textContent = quantity;
-                
-                // Recarregar a página para ver os totais atualizados
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-            }
-        });
-    });
-    
-    // Remover Item
+    // Função de notificação minimalista
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.className = `custom-notification ${type}`;
+        document.body.appendChild(notification);
+
+        // Animação de entrada
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 50);
+
+        // Remover depois de 2.5s
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 400);
+        }, 2500);
+    }
+
+    // Evento de remover item
     document.querySelectorAll('.remove-item-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const gameId = this.getAttribute('data-game-id');
             const itemCard = this.closest('.cart-item-card');
-            
-            if (confirm('Tem certeza que deseja remover este item do carrinho?')) {
-                // Animação de remoção
-                itemCard.style.opacity = '0';
-                itemCard.style.transform = 'translateX(100px)';
-                
-                setTimeout(() => {
-                    window.location.href = `index.php?route=cart&action=remove&game_id=${gameId}`;
-                }, 300);
-            }
+
+            // Exibe a notificação no estilo do site
+            showNotification('Removendo item do carrinho...', 'info');
+
+            // Animação de remoção
+            itemCard.style.opacity = '0';
+            itemCard.style.transform = 'translateX(80px)';
+
+            setTimeout(() => {
+                window.location.href = `index.php?route=cart&action=remove&game_id=${gameId}`;
+            }, 600);
         });
     });
-    
-    // Finalizar Compra
-    document.querySelector('.checkout-btn')?.addEventListener('click', function() {
-        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
-        this.disabled = true;
-        
-        // Simular processamento
-        setTimeout(() => {
-            alert('Compra finalizada com sucesso! Redirecionando...');
-            // window.location.href = 'index.php?route=checkout';
-        }, 2000);
-    });
-    
-    function updateCartQuantity(gameId, quantity) {
-        // Simular chamada AJAX para atualizar quantidade
-        console.log(`Atualizando jogo ${gameId} para quantidade ${quantity}`);
-        // Aqui você implementaria a chamada real para o backend
-    }
 });
 </script>
+
+<style>
+/* === Notificação minimalista estilo preto e branco === */
+.custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    z-index: 9999;
+    letter-spacing: 0.3px;
+}
+
+/* Animação de entrada/saída */
+.custom-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Tipos de mensagem (tons neutros) */
+.custom-notification.info {
+    background: #000;
+    color: #fff;
+    border: 1px solid #333;
+}
+
+.custom-notification.success {
+    background: #111;
+    border: 1px solid #444;
+}
+
+.custom-notification.error {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+}
+</style>

@@ -4,12 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 // 2) Config e helpers
-// Carrega a classe de conexão e funções de ajuda
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/auth.php';
 
-// 3) Autoload para carregar Models e Controllers automaticamente
+// 3) Autoload para Models e Controllers
 spl_autoload_register(function($class){
     $controllerPath = __DIR__ . '/../controllers/' . $class . '.php';
     $modelPath = __DIR__ . '/../models/' . $class . '.php';
@@ -72,13 +72,15 @@ switch($route){
         else $c->list();
         break;
 
-
-    // 👇 ROTA DO CARRINHO CORRIGIDA E NO LUGAR CERTO 👇
+    // ✅ ROTA DO CARRINHO (única, limpa e funcional)
     case 'cart':
         $c = new CartController();
         $action = $_POST['action'] ?? $_GET['action'] ?? 'show';
+
         if ($action === 'add' && $method === 'POST') {
             $c->add();
+        } elseif ($action === 'remove') {
+            $c->remove();
         } else {
             $c->show();
         }
@@ -86,20 +88,44 @@ switch($route){
 
     default:
         http_response_code(404);
-        // O ideal é ter uma view para a página 404
         echo 'Página não encontrada';
         break;
-
-        case 'cart':
-    $c = new CartController();
-    $action = $_GET['action'] ?? 'show'; // Prioriza GET para ações como 'remove'
-
-    if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $c->add();
-    } elseif ($action === 'remove') { // <-- ADICIONE ESTA CONDIÇÃO
-        $c->remove();
-    } else {
-        $c->show();
-    }
-    break;
 }
+?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* Botão outline primário */
+.btn-outline-primary {
+    color: #ffffff !important;
+    background-color: #000000ff !important;
+    border-color: #000000ff !important;
+    padding: 10px 18px !important;
+    font-size: 16px !important;
+    border-radius: 8px;
+    transition: all 0.25s ease-in-out;
+}
+
+/* Efeito hover */
+.btn-outline-primary:hover {
+    background-color: #000000ff !important;
+    border-color: #000000ff !important;
+    color: #ffffff !important;
+    transform: scale(1.05);
+}
+
+/* Botão do checkout */
+.btn.btn-success.btn-lg.w-100.checkout-btn {
+    background-color: #000000ff !important;
+    border-color: #000000ff !important;
+    color: #ffffff !important;
+    padding: 12px 20px !important;
+    font-size: 18px !important;
+    border-radius: 8px;
+    transition: all 0.25s ease-in-out;
+}
+
+.btn.btn-success.btn-lg.w-100.checkout-btn:hover {
+    transform: scale(1.05);
+}
+</style>

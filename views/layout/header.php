@@ -13,7 +13,7 @@
         <div class="container-fluid">
             <a class="navbar-brand logo" href="index.php">
                 <i class="fas fa-gem"></i>
-                BlackLabel Store
+                Nexus Keys
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
