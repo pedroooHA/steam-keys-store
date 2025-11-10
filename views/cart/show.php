@@ -61,33 +61,17 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-2 text-center">
+                               
+
+                                 <div class="col-auto ms-auto d-flex align-items-center">
                                     <span class="cart-item-price">R$ <?php echo number_format($price, 2, ',', '.'); ?></span>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="quantity-controls">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <span class="quantity-display mx-2"><?php echo $item['quantidade']; ?></span>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn" data-action="increase">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-1 text-end">
-                                    <span class="cart-item-subtotal">R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></span>
-                                </div>
-
-                                <div class="col-md-1 text-center">
                                     <!-- Link que chama a rota remove. Tem data-game-id e href -->
                                     <a href="index.php?route=cart&action=remove&game_id=<?php echo $item['id']; ?>"
                                        class="btn btn-sm btn-outline-danger remove-item-link"
                                        data-game-id="<?php echo $item['id']; ?>"
                                        title="Remover item">
                                         <i class="fas fa-trash-alt"></i>
+
                                     </a>
                                 </div>
                             </div>
@@ -198,6 +182,12 @@
     width: 100%;
     height: 80px;
     object-fit: cover;
+}
+
+.cart-item-price {
+    text-align: center !important;
+    font-size: 20px;
+    padding-right: 30px;
 }
 
 .cart-item-title {

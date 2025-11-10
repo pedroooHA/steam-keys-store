@@ -171,6 +171,11 @@ class WishlistController {
                 font-weight: bold;
             }
 
+            button.btn.btn-outline-danger.w-100
+             {
+    margin-top: 22px;
+            }
+
             .empty-wishlist {
                 text-align: center;
                 padding: 4rem 2rem;
@@ -192,11 +197,12 @@ class WishlistController {
         </head>
         <body>
             <?php 
-            $header_path = $base_dir . '/layout/header.php';
-            if (file_exists($header_path)) {
-                require $header_path;
-            }
-            ?>
+$header_path = __DIR__ . '/../views/layout/header.php';
+if (file_exists($header_path)) {
+    require $header_path;
+}
+?>
+
 
             <div class="container mt-4">
                 <div class="wishlist-header">
@@ -289,11 +295,11 @@ class WishlistController {
             </div>
 
             <?php 
-            $footer_path = $base_dir . '/layout/footer.php';
-            if (file_exists($footer_path)) {
-                require $footer_path;
-            }
-            ?>
+$footer_path = __DIR__ . '/../views/layout/footer.php';
+if (file_exists($footer_path)) {
+    require $footer_path;
+}
+?>
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
