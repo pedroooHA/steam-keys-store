@@ -44,16 +44,23 @@ require $baseDir . '/layout/header.php';
                                 
                                 <div class="carousel-slide">
                                     <div class="game-card">
-                                        <div class="card-image-container">
-                                            <img src="<?php echo $imageUrl; ?>" alt="<?php echo htmlspecialchars($game['title']); ?>" class="card-image">
-                                            <div class="steam-badge">
-                                                <i class="fab fa-steam"></i>
-                                                <span>Steam</span>
+                                        <!-- LINK ADICIONADO AQUI -->
+                                        <a href="index.php?route=games&action=view&id=<?php echo $game['id']; ?>" class="text-decoration-none">
+                                            <div class="card-image-container">
+                                                <img src="<?php echo $imageUrl; ?>" alt="<?php echo htmlspecialchars($game['title']); ?>" class="card-image">
+                                                <div class="steam-badge">
+                                                    <i class="fab fa-steam"></i>
+                                                    <span>Steam</span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </a>
+                                        <!-- FIM DO LINK -->
                                         
                                         <div class="card-content">
-                                            <h3 class="game-title"><?php echo htmlspecialchars($game['title']); ?></h3>
+                                            <!-- LINK ADICIONADO NO TÍTULO TAMBÉM -->
+                                            <a href="index.php?route=games&action=view&id=<?php echo $game['id']; ?>" class="text-decoration-none">
+                                                <h3 class="game-title"><?php echo htmlspecialchars($game['title']); ?></h3>
+                                            </a>
                                             
                                             <div class="price-section">
                                                 <?php if (isset($game['discount_percent']) && isset($game['final_price'])): ?>
@@ -78,6 +85,7 @@ require $baseDir . '/layout/header.php';
                                                     Adicionar ao Carrinho
                                                 </button>
                                             </form>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -118,6 +126,10 @@ require $baseDir . '/layout/footer.php';
         color: #1d1d1f;
         line-height: 1.4;
         min-height: 100vh;
+    }
+
+    h1 {
+        text-align: center;
     }
 
     .page-container {
@@ -355,6 +367,11 @@ require $baseDir . '/layout/footer.php';
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        transition: color 0.2s ease;
+    }
+
+    .game-title:hover {
+        color: #333333;
     }
 
     .price-section {
@@ -404,7 +421,7 @@ require $baseDir . '/layout/footer.php';
     .pricing-simple .final-price {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #27ae60;
+        color: #000000ff;
         display: block;
     }
 

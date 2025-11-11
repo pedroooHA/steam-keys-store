@@ -1,29 +1,22 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 
-<div class="container py-4">
+<div class="page-container">
     <!-- Header Melhorado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="mb-1" style="color: var(--cor-texto-principal);">
-                <i class="fas fa-shopping-cart me-2" style="color: var(--cor-botao);"></i>
-                Seu Carrinho
-            </h1>
-            <p class="text-muted mb-0">Revise seus itens antes de finalizar a compra</p>
-        </div>
-        <a href="index.php" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-2"></i>Continuar Comprando
-        </a>
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-shopping-cart me-2"></i>
+            Seu Carrinho
+        </h1>
+        <p class="text-muted mb-0">Revise seus itens antes de finalizar a compra</p>
     </div>
 
     <?php if (empty($cartItems)): ?>
         <!-- Estado Vazio Melhorado -->
-        <div class="empty-cart text-center py-5">
-            <div class="empty-cart-icon mb-4">
-                <i class="fas fa-shopping-cart" style="font-size: 4rem; color: var(--cor-botao); opacity: 0.3;"></i>
-            </div>
-            <h3 style="color: var(--cor-texto-principal);">Seu carrinho está vazio</h3>
-            <p class="text-muted mb-4">Descubra jogos incríveis para adicionar à sua coleção</p>
-            <a href="index.php" class="btn btn-primary btn-lg">
+        <div class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Seu carrinho está vazio</h3>
+            <p>Descubra jogos incríveis para adicionar à sua coleção</p>
+            <a href="index.php" class="btn btn-primary mt-3">
                 <i class="fas fa-gamepad me-2"></i>Explorar Jogos
             </a>
         </div>
@@ -31,7 +24,7 @@
         <div class="row">
             <!-- Lista de Itens -->
             <div class="col-lg-8">
-                <div class="cart-items-container">
+                <div class="catalogo-wrapper p-4 shadow-sm rounded-4">
                     <?php foreach($cartItems as $item):
                         // Lógica inteligente para a imagem
                         $imagePath = htmlspecialchars($item['image'] ?? '');
@@ -46,7 +39,7 @@
                         $price = $item['price'] ?? $item['preco'] ?? $item['preco_unitario'] ?? 0;
                         $subtotal = $price * $item['quantidade'];
                     ?>
-                        <div class="cart-item-card" data-game-id="<?php echo $item['id']; ?>">
+                        <div class="cart-item-card mb-3" data-game-id="<?php echo $item['id']; ?>">
                             <div class="row align-items-center">
                                 <div class="col-md-2">
                                     <img src="<?php echo $imageUrl; ?>"
@@ -54,24 +47,24 @@
                                          class="cart-item-image rounded">
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <h5 class="cart-item-title mb-1"><?php echo htmlspecialchars($item['title']); ?></h5>
-                                    <div class="platform-badge">
-                                        <i class="fa-brands fa-steam me-1"></i>Steam
+                                    <div class="steam-badge-custom">
+                                        <i class="fa-brands fa-steam"></i>
+                                        <span>Steam</span>
                                     </div>
                                 </div>
 
-                               
+                                <div class="col-md-3 text-end">
+                                    <span class="final-price-custom">R$ <?php echo number_format($price, 2, ',', '.'); ?></span>
+                                </div>
 
-                                 <div class="col-auto ms-auto d-flex align-items-center">
-                                    <span class="cart-item-price">R$ <?php echo number_format($price, 2, ',', '.'); ?></span>
-                                    <!-- Link que chama a rota remove. Tem data-game-id e href -->
+                                <div class="col-md-1 text-end">
                                     <a href="index.php?route=cart&action=remove&game_id=<?php echo $item['id']; ?>"
-                                       class="btn btn-sm btn-outline-danger remove-item-link"
+                                       class="remove-btn-custom"
                                        data-game-id="<?php echo $item['id']; ?>"
                                        title="Remover item">
                                         <i class="fas fa-trash-alt"></i>
-
                                     </a>
                                 </div>
                             </div>
@@ -107,14 +100,14 @@
 
                         <div class="summary-row total-row">
                             <strong>Total</strong>
-                            <strong style="color: var(--cor-desconto); font-size: 1.2rem;">
+                            <strong class="final-price-custom">
                                 R$ <?php echo number_format($total, 2, ',', '.'); ?>
                             </strong>
                         </div>
                     </div>
 
                     <div class="summary-actions mt-4">
-                        <button class="btn btn-success btn-lg w-100 checkout-btn">
+                        <button class="add-to-cart-btn-custom w-100 checkout-btn">
                             <i class="fas fa-lock me-2"></i>Finalizar Compra
                         </button>
 
@@ -132,14 +125,13 @@
                     <div class="recommendations mt-4">
                         <h6 class="mb-3">Quem comprou este jogo também comprou:</h6>
                         <div class="recommended-games">
-                            <!-- Aqui você pode adicionar jogos recomendados -->
                             <div class="recommended-game">
                                 <small>The Witcher 3</small>
-                                <small class="text-primary">R$ 49,90</small>
+                                <small class="final-price-custom">R$ 49,90</small>
                             </div>
                             <div class="recommended-game">
                                 <small>Cyberpunk 2077</small>
-                                <small class="text-primary">R$ 89,90</small>
+                                <small class="final-price-custom">R$ 89,90</small>
                             </div>
                         </div>
                     </div>
@@ -155,106 +147,135 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* Estilos para o Carrinho */
-.cart-items-container {
-    background: var(--cor-card);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+/* ESTILOS CONSISTENTES COM OS OUTROS CARDS */
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
 }
 
-.cart-item-card {
+.page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 10px;
+}
+
+.page-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.catalogo-wrapper {
     background: white;
-    border-radius: 8px;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ESTILOS DOS ITENS DO CARRINHO */
+.cart-item-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     padding: 1.5rem;
     margin-bottom: 1rem;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-    background-color: black;
 }
 
 .cart-item-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
 .cart-item-image {
     width: 100%;
     height: 80px;
     object-fit: cover;
-}
-
-.cart-item-price {
-    text-align: center !important;
-    font-size: 20px;
-    padding-right: 30px;
+    border-radius: 8px;
 }
 
 .cart-item-title {
-    color: var(--cor-texto-principal);
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.3;
+    margin: 0;
 }
 
-h5.cart-item-title.mb-1 {
-    color: white;
-}
-
-span.cart-item-price {
-    color: white;
-    font-weight: 600;
-}
-
-span.cart-item-subtotal {
-    color: white;
-    font-weight: 600;
-}
-
-span.quantity-display.mx-2 {
-    color: white;
-    font-weight: 600;
-}
-
-.platform-badge {
+.steam-badge-custom {
     background: linear-gradient(135deg, #1b2838, #2a475e);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 6px;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 8px;
     font-size: 0.75rem;
-    display: inline-block;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-top: 0.5rem;
 }
 
-.quantity-controls {
-    display: flex;
+.final-price-custom {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000000ff;
+}
+
+.remove-btn-custom {
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    text-decoration: none;
+    width: 45px;
+    height: 45px;
 }
 
-.quantity-display {
-    min-width: 30px;
-    text-align: center;
-    font-weight: 600;
+.remove-btn-custom:hover {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
 }
 
-.cart-item-price,
-.cart-item-subtotal {
-    font-weight: 600;
-    color: var(--cor-texto-principal);
-}
-
+/* RESUMO DO PEDIDO */
 .order-summary-card {
-    background: var(--cor-card);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
     padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     position: sticky;
     top: 2rem;
 }
 
 .summary-title {
-    color: var(--cor-texto-principal);
-    border-bottom: 2px solid var(--cor-botao);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000000;
+    border-bottom: 2px solid #000000;
     padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.summary-details {
     margin-bottom: 1rem;
 }
 
@@ -263,30 +284,38 @@ span.quantity-display.mx-2 {
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 0;
-}
-
-text-muted {
-    color: red !important;
+    color: #000000;
 }
 
 .total-row {
     border-top: 2px solid #e9ecef;
     padding-top: 1rem;
     margin-top: 0.5rem;
+    font-size: 1.2rem;
 }
 
-.checkout-btn {
-    background: linear-gradient(135deg, var(--cor-botao), #3a4a8a);
+.add-to-cart-btn-custom {
+    background: linear-gradient(135deg, #000000, #333333);
+    color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 12px;
+    font-size: 0.95rem;
     font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    width: 100%;
 }
 
-.checkout-btn:hover {
+.add-to-cart-btn-custom:hover {
+    background: linear-gradient(135deg, #333333, #555555);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(58,74,138,0.4);
+    color: white;
 }
 
 .security-badges {
@@ -305,38 +334,56 @@ text-muted {
     border-bottom: none;
 }
 
-.empty-cart {
-    background: var(--cor-card);
-    border-radius: 12px;
-    padding: 4rem 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+/* ESTADO VAZIO */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #86868b;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
 }
 
-.remove-item-link {
-    transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease;
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #e0e0e0;
 }
 
-.remove-item-link:hover {
-    background-color: #dc3545;
-    color: white;
-    transform: scale(1.25);
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #000000;
+    font-weight: 600;
 }
 
-.remove-item-link:active {
-    transform: scale(1.15);
+.empty-state p {
+    font-size: 1.1rem;
+    color: #86868b;
 }
 
-.quantity-btn {
-    transition: all 0.2s ease;
-}
-
-.quantity-btn:hover {
-    background-color: var(--cor-botao);
-    color: white;
-}
-
-/* Responsividade */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
+    .page-container {
+        padding: 20px 15px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .catalogo-wrapper {
+        padding: 1.5rem !important;
+    }
+    
+    .cart-item-title {
+        font-size: 1rem;
+    }
+    
+    .final-price-custom {
+        font-size: 1.1rem;
+    }
+    
     .cart-item-card .row > div {
         margin-bottom: 1rem;
     }
@@ -344,24 +391,20 @@ text-muted {
     .cart-item-card .row > div:last-child {
         margin-bottom: 0;
     }
+}
 
-    .quantity-controls {
-        justify-content: flex-start;
+@media (max-width: 480px) {
+    .cart-item-image {
+        height: 60px;
     }
-}
-
-/* SweetAlert customização para combinar com tema */
-.swal2-popup {
-  background: #1e1b29 !important;
-  color: #f3e8ff !important;
-  font-family: 'Poppins', sans-serif;
-  border-radius: 12px !important;
-}
-.swal2-title { font-size: 1.2rem; font-weight: 600; }
-.swal2-confirm, .swal2-cancel {
-  border-radius: 8px !important;
-  padding: 8px 14px !important;
-  font-weight: 600;
+    
+    .cart-item-title {
+        font-size: 0.9rem;
+    }
+    
+    .final-price-custom {
+        font-size: 1rem;
+    }
 }
 </style>
 
@@ -387,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Evento de remover item
-    document.querySelectorAll('.remove-item-btn').forEach(button => {
+    document.querySelectorAll('.remove-btn-custom').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const gameId = this.getAttribute('data-game-id');
@@ -405,50 +448,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 600);
         });
     });
+
+    // Botão finalizar compra
+    document.querySelector('.checkout-btn')?.addEventListener('click', function() {
+        showNotification('Processando sua compra...', 'success');
+        // Aqui você pode adicionar a lógica de finalização de compra
+    });
 });
 </script>
-
-<style>
-/* === Notificação minimalista estilo preto e branco === */
-.custom-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #000;
-    color: #fff;
-    padding: 14px 22px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.4s ease;
-    z-index: 9999;
-    letter-spacing: 0.3px;
-}
-
-/* Animação de entrada/saída */
-.custom-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Tipos de mensagem (tons neutros) */
-.custom-notification.info {
-    background: #000;
-    color: #fff;
-    border: 1px solid #333;
-}
-
-.custom-notification.success {
-    background: #111;
-    border: 1px solid #444;
-}
-
-.custom-notification.error {
-    background: #fff;
-    color: #000;
-    border: 1px solid #000;
-}
-</style>
