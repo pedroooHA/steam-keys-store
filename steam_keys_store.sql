@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 13/11/2025 às 01:02
+-- Tempo de geração: 14/11/2025 às 00:58
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `cart` (
   `preco_unitario` decimal(10,2) NOT NULL,
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `cart`
+--
+
+INSERT INTO `cart` (`id`, `id_usuario`, `id_jogo`, `quantidade`, `preco_unitario`, `criado_em`) VALUES
+(42, 3, 123, 1, 89.90, '2025-11-13 23:49:52');
 
 -- --------------------------------------------------------
 
@@ -232,7 +239,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `created_at`, `role
 (2, 'Admin', 'admin@exemplo.com', '$2y$10$FIiFjAaTob/ITvwsTpRSG.bNb084W9LBRyEncZmYtSeLa3438myuW', '2025-09-25 01:44:21', 'admin'),
 (3, 'kevin', 'kevin@gmail.com', '$2y$10$FIiFjAaTob/ITvwsTpRSG.bNb084W9LBRyEncZmYtSeLa3438myuW', '2025-10-29 22:52:24', 'admin'),
 (4, 'kevin', 'kevin.h.nogueira@gmail.com', '$2y$10$t5CvAW60QgY7jwHdaFWexOtw9MX8lDh7rcMdg0Hzw.XZ9OmHX9zxW', '2025-11-10 22:31:31', 'user'),
-(5, 'Anderson Burnes', 'kevin.h.burnes@gmail.com', '$2y$10$IbuzRBJBeb688zhMU7Bl6.cAIyeX.Zqzb9XbdCPBaOpPmwX.0z9iy', '2025-11-11 01:36:55', 'user');
+(5, 'Anderson Burnes', 'kevin.h.burnes@gmail.com', '$2y$10$IbuzRBJBeb688zhMU7Bl6.cAIyeX.Zqzb9XbdCPBaOpPmwX.0z9iy', '2025-11-11 01:36:55', 'user'),
+(6, 'kevin', 'kevinenrique@gmail.com', '$2y$10$ZH59tYQMvPqE6kKUYHlvT.3sykZB3MDGun5q1pvcoancG4361Kp/y', '2025-11-13 22:29:45', 'user');
 
 -- --------------------------------------------------------
 
@@ -257,7 +265,9 @@ INSERT INTO `wishlist` (`id`, `usuario_id`, `jogo_id`, `data_criacao`) VALUES
 (3, 4, 123, '2025-11-10 22:46:21'),
 (4, 4, 114, '2025-11-10 22:46:54'),
 (8, 4, 67, '2025-11-11 01:00:13'),
-(11, 4, 54, '2025-11-11 22:35:03');
+(11, 4, 54, '2025-11-11 22:35:03'),
+(22, 3, 85, '2025-11-13 23:53:24'),
+(23, 3, 160, '2025-11-13 23:53:28');
 
 --
 -- Índices para tabelas despejadas
@@ -306,7 +316,7 @@ ALTER TABLE `wishlist`
 -- AUTO_INCREMENT de tabela `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de tabela `categories`
@@ -324,13 +334,13 @@ ALTER TABLE `games`
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `wishlist`
 --
 ALTER TABLE `wishlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Restrições para tabelas despejadas
