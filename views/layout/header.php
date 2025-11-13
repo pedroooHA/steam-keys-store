@@ -125,8 +125,6 @@
             viewAllLink.href = `index.php?route=search&q=${encodeURIComponent(searchTerm)}`;
             viewAllLink.className = 'search-view-all';
             viewAllLink.textContent = `Ver todos os resultados (${games.length})`;
-            resultsContainer.appendChild(viewAllLink);
-            
             searchForm.appendChild(resultsContainer);
         }
         
