@@ -23,17 +23,27 @@
 
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto">
-        <?php if(!empty($_SESSION['user_id'])): 
-            $me = User::findById($_SESSION['user_id']);
-        ?>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=games">Categorias</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=wishlist">Lista de desejos</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=logout">Sair</a></li>
-        <?php else: ?>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=login">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.php?route=register">Cadastrar</a></li>
+    <?php if(!empty($_SESSION['user_id'])): 
+        $me = User::findById($_SESSION['user_id']);
+    ?>
+        <li class="nav-item"><a class="nav-link" href="index.php?route=games">Categorias</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php?route=wishlist">Lista de desejos</a></li>
+        
+        <!--  NOVO: Link do Painel Admin (apenas para administradores) -->
+       <?php if($me->getRole() == 'admin'): ?>
+            <li class="nav-item">
+                <a class="nav-link text-warning" href="index.php?route=admin">
+                    <i class="fas fa-cog"></i> Painel de Controle
+                </a>
+            </li>
         <?php endif; ?>
-      </ul>
+        
+        <li class="nav-item"><a class="nav-link" href="index.php?route=logout">Sair</a></li>
+    <?php else: ?>
+        <li class="nav-item"><a class="nav-link" href="index.php?route=login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php?route=register">Cadastrar</a></li>
+    <?php endif; ?>
+</ul>
 
                 <!-- Caixa de busca -->
                 <form class="search-form" role="search" action="index.php?route=search" method="GET" id="searchForm">

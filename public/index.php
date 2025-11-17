@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
 // 2) Config e helpers
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/auth.php';
@@ -96,6 +95,30 @@ switch($route){
             $c->remove();
         } else {
             $c->show();
+        }
+        break;
+
+    // ✅ NOVA ROTA: PAINEL ADMINISTRATIVO
+    case 'admin':
+        requireAdmin(); // Garante que só admins acessem
+        
+        $c = new AdminController();
+        $action = $_GET['action'] ?? 'dashboard';
+        
+        if ($action === 'dashboard') {
+            $c->dashboard();
+        } elseif ($action === 'users' && $method === 'POST') {
+            $c->manageUsers();
+        } elseif ($action === 'users') {
+            $c->showUsers();
+        } elseif ($action === 'add-game' && $method === 'POST') {
+            $c->addGame();
+        } elseif ($action === 'add-game') {
+            $c->showAddGame();
+        } elseif ($action === 'reports') {
+            $c->showReports();
+        } else {
+            $c->dashboard();
         }
         break;
 

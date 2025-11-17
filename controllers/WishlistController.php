@@ -80,6 +80,7 @@ class WishlistController {
             /* ESTILOS CONSISTENTES COM OS OUTROS CARDS */
             .page-container {
                 max-width: 1400px;
+                min-width: 1400px;
                 margin: 0 auto;
                 padding: 30px 20px;
             }

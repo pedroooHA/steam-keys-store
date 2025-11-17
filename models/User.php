@@ -7,7 +7,6 @@ class User {
     private $password_hash;
     private $role;
 
-    // Construtor e Getters/Setters (Mantenha como estão)
     public function __construct($data = []) {
         if($data){
             $this->id = $data['id'] ?? null;
@@ -28,10 +27,37 @@ class User {
     public function getRole(){ return $this->role; }
     public function setRole($role){ $this->role = $role; }
     
-    // --- MÉTODOS DE BANCO DE DADOS CORRIGIDOS ---
+    public function isAdmin() {
+        return $this->role === 'admin';
+    }
+    
+    // --- NOVOS MÉTODOS ADICIONADOS ---
+    
+    public static function getAll() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('SELECT * FROM users ORDER BY name');
+        $stmt->execute();
+        $users = [];
+        
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $users[] = new User($data);
+        }
+        
+        return $users;
+    }
+    
+    public static function countAll() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('SELECT COUNT(*) as total FROM users');
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'];
+    }
+    
+    // --- MÉTODOS DE BANCO DE DADOS EXISTENTES ---
 
     public function save() {
-        $pdo = Database::getConnection(); // <-- CORRIGIDO
+        $pdo = Database::getConnection();
         if ($this->id) {
             $stmt = $pdo->prepare('UPDATE users SET name = ?, email = ?, password_hash = ?, role = ? WHERE id = ?');
             $stmt->execute([$this->name, $this->email, $this->password_hash, $this->role, $this->id]);
@@ -43,7 +69,7 @@ class User {
     }
 
     public static function findByEmail($email) {
-        $pdo = Database::getConnection(); // <-- CORRIGIDO
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
         $stmt->execute([$email]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -51,11 +77,11 @@ class User {
     }
 
     public static function findById($id) {
-        $pdo = Database::getConnection(); // <-- CORRIGIDO
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
         $stmt->execute([$id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        // Retorna um objeto User se encontrar, senão null
         return $data ? new User($data) : null;
     }
 }
+?>
