@@ -30,6 +30,23 @@ class Category {
         return $data ? new Category($data) : null;
     }
 
+    // --- NOVO MÉTODO: Encontrar por nome ---
+    public static function findByName($name) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('SELECT * FROM categories WHERE name = ?');
+        $stmt->execute([$name]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ? new Category($data) : null;
+    }
+
+    // --- NOVO MÉTODO: Criar categoria e retornar ID ---
+    public static function create($name) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('INSERT INTO categories (name) VALUES (?)');
+        $stmt->execute([$name]);
+        return $pdo->lastInsertId();
+    }
+
     public function save() {
         $pdo = Database::getConnection(); // <-- CORRIGIDO
         if ($this->id) {

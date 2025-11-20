@@ -109,26 +109,32 @@
 
                 <!-- Ações -->
                 <div class="action-buttons mb-4">
-    <!-- Formulário do CARRINHO -->
-    <form action="index.php?route=cart&action=add" method="post" class="d-grid gap-2">
-        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
-        
-        <button type="submit" class="btn btn-primary btn-lg py-3">
-            <i class="fas fa-shopping-cart me-2"></i>
-            Adicionar ao Carrinho - R$ <?php echo number_format($game['price'], 2, ',', '.'); ?>
-        </button>
-    </form>
+                    <!-- Formulário do CARRINHO -->
+                    <form action="index.php?route=cart&action=add" method="post" class="d-grid gap-2">
+                        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
+                        
+                        <button type="submit" 
+                                class="btn btn-primary btn-lg py-3"
+                                <?php echo ($game['estoque'] <= 0) ? 'disabled' : ''; ?>>
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            <?php if ($game['estoque'] > 0): ?>
+                                Adicionar ao Carrinho - R$ <?php echo number_format($game['price'], 2, ',', '.'); ?>
+                            <?php else: ?>
+                                Produto Esgotado
+                            <?php endif; ?>
+                        </button>
+                    </form>
 
-    <!-- Formulário da WISHLIST (CORRIGIDO) -->
-    <form action="index.php?route=wishlist&action=add" method="post" class="d-grid gap-2">
-        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
-        
-        <button type="submit" class="btn btn-outline-secondary btn-lg py-3">
-            <i class="fas fa-heart me-2"></i>
-            Adicionar à Lista de Desejos
-        </button>
-    </form>
-</div>
+                    <!-- Formulário da WISHLIST -->
+                    <form action="index.php?route=wishlist&action=add" method="post" class="d-grid gap-2">
+                        <input type="hidden" name="game_id" value="<?php echo $game['id']; ?>">
+                        
+                        <button type="submit" class="btn btn-outline-secondary btn-lg py-3">
+                            <i class="fas fa-heart me-2"></i>
+                            Adicionar à Lista de Desejos
+                        </button>
+                    </form>
+                </div>
 
                 <!-- Informações Rápidas -->
                 <div class="quick-info mb-4">
@@ -150,7 +156,12 @@
                             <div class="info-item">
                                 <i class="fas fa-key me-2 text-muted"></i>
                                 <strong>Chave Steam:</strong> 
-                                <span class="text-success">Disponível</span>
+                                <span class="<?php echo $game['estoque'] > 0 ? 'text-success' : 'text-danger'; ?>">
+                                    <?php echo $game['estoque'] > 0 ? 'Disponível' : 'Indisponível'; ?>
+                                </span>
+                                <?php if ($game['estoque'] > 0): ?>
+                                    <small class="text-muted d-block">(<?php echo $game['estoque']; ?> em estoque)</small>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -163,12 +174,20 @@
                 </div>
 
                 <!-- Entrega Instantânea -->
-                <div class="delivery-info alert alert-success">
+                <div class="delivery-info alert <?php echo $game['estoque'] > 0 ? 'alert-success' : 'alert-warning'; ?>">
                     <div class="d-flex align-items-center">
-                        <i class="fas fa-bolt me-3 fs-4"></i>
+                        <i class="fas fa-<?php echo $game['estoque'] > 0 ? 'bolt' : 'clock'; ?> me-3 fs-4"></i>
                         <div>
-                            <strong class="d-block">Entrega Instantânea</strong>
-                            <small class="d-block">Chave Steam enviada automaticamente após a confirmação do pagamento</small>
+                            <strong class="d-block">
+                                <?php echo $game['estoque'] > 0 ? 'Entrega Instantânea' : 'Produto em Reposição'; ?>
+                            </strong>
+                            <small class="d-block">
+                                <?php if ($game['estoque'] > 0): ?>
+                                    Chave Steam enviada automaticamente após a confirmação do pagamento
+                                <?php else: ?>
+                                    Este produto está temporariamente esgotado. Previsão de nova remessa em breve.
+                                <?php endif; ?>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -203,7 +222,7 @@
                     <div class="tab-pane fade show active" id="description" role="tabpanel">
                         <h4 class="mb-3">Sobre o Jogo</h4>
                         <div class="game-description">
-                            <?php echo nl2br(htmlentities($game['description'])); ?>
+                            <?php echo nl2br(htmlentities($game['description'] ?? 'Descrição não disponível.')); ?>
                         </div>
                         
                         <!-- Características -->
@@ -380,7 +399,6 @@
 .delivery-info {
     border: none;
     border-radius: 10px;
-    background: linear-gradient(135deg, #d4edda, #c3e6cb);
 }
 
 .game-tabs .nav-tabs .nav-link {
@@ -448,16 +466,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
     
     // Efeito de loading no botão de compra
-    document.querySelector('form button[type="submit"]').addEventListener('click', function() {
-        const originalText = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adicionando...';
-        this.disabled = true;
-        
-        setTimeout(() => {
-            this.innerHTML = originalText;
-            this.disabled = false;
-        }, 2000);
-    });
+    const buyButton = document.querySelector('form button[type="submit"]');
+    if (buyButton && !buyButton.disabled) {
+        buyButton.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adicionando...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 2000);
+        });
+    }
 });
 </script>
 
