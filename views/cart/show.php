@@ -141,7 +141,7 @@
     <?php endif; ?>
 </div>
 
-<!-- Modal de Pagamento Reformulado -->
+<!-- Modal de Seleção de Pagamento -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content payment-modal-content">
@@ -220,8 +220,8 @@
         <!-- Botão de Confirmação -->
         <div class="mt-4">
           <button type="button" class="confirm-payment-btn w-100" id="confirmPayment">
-            <i class="fas fa-lock me-2"></i>
-            Confirmar Pagamento
+            <i class="fas fa-arrow-right me-2"></i>
+            Avançar
           </button>
           
           <div class="security-badges mt-3 text-center">
@@ -239,8 +239,194 @@
   </div>
 </div>
 
+<!-- Modal do PIX -->
+<div class="modal fade" id="pixModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content payment-modal-content">
+      
+      <div class="modal-header payment-modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-qrcode me-2"></i>
+          Pagamento via PIX
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4 text-center">
+        <!-- Informações do Pedido -->
+        <div class="order-info mb-4">
+          <h6 class="text-muted mb-2">Valor a pagar</h6>
+          <h3 class="final-price-custom mb-3">R$ <?php echo number_format($total, 2, ',', '.'); ?></h3>
+          <div class="expiry-timer bg-light rounded p-3">
+            <i class="fas fa-clock text-warning me-2"></i>
+            <span>Este código expira em: <strong id="countdown">30:00</strong></span>
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-code-container mb-4">
+          <div class="qr-code-wrapper mx-auto">
+            <!-- Substitua pelo seu QR Code real -->
+            <div class="qr-code-placeholder">
+              <i class="fas fa-qrcode" style="font-size: 120px; color: #000;"></i>
+              <p class="text-muted mt-2 small">QR Code PIX</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Código PIX Copiável -->
+        <div class="pix-code-container mb-4">
+          <label class="form-label text-muted small">Código PIX (copie e cole):</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="pixCode" value="00020126580014br.gov.bcb.pix0136aae6e21a-8c1a-4d5c-9e3b-123456789012520400005303986540579.905802BR5913LOJA EXEMPLO6008SAO PAULO62070503***6304A1B2" readonly>
+            <button class="btn btn-outline-secondary" type="button" id="copyPixCode">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          <small class="text-muted">Use este código para pagar via PIX copia e cola</small>
+        </div>
+
+        <!-- Instruções -->
+        <div class="instructions bg-light rounded p-3 mb-4">
+          <h6 class="mb-2"><i class="fas fa-info-circle me-2"></i>Como pagar:</h6>
+          <ol class="small text-start mb-0">
+            <li>Abra o app do seu banco</li>
+            <li>Escaneie o QR Code ou copie o código</li>
+            <li>Confirme o pagamento</li>
+            <li>Aguarde a confirmação automática</li>
+          </ol>
+        </div>
+
+        <!-- Botões -->
+        <div class="d-grid gap-2">
+          <button type="button" class="confirm-payment-btn" id="confirmPixPayment">
+            <i class="fas fa-check me-2"></i>
+            Já efetuei o pagamento
+          </button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>
+            Cancelar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal do Cartão de Crédito -->
+<div class="modal fade" id="cardModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content payment-modal-content">
+      
+      <div class="modal-header payment-modal-header">
+        <h5 class="modal-title">
+          <i class="far fa-credit-card me-2"></i>
+          Pagamento com Cartão
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4">
+        <!-- Informações do Pedido -->
+        <div class="order-info mb-4 text-center">
+          <h6 class="text-muted mb-2">Valor a pagar</h6>
+          <h3 class="final-price-custom mb-3">R$ <?php echo number_format($total, 2, ',', '.'); ?></h3>
+        </div>
+
+        <!-- Formulário do Cartão -->
+        <form id="creditCardForm">
+          <!-- Número do Cartão -->
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label">Número do Cartão</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+              <span class="input-group-text" id="cardBrand">
+                <i class="fas fa-credit-card text-muted"></i>
+              </span>
+            </div>
+            <div class="card-brands mt-2">
+              <small class="text-muted me-2">Aceitamos:</small>
+              <i class="fab fa-cc-visa me-1 text-muted"></i>
+              <i class="fab fa-cc-mastercard me-1 text-muted"></i>
+              <i class="fab fa-cc-amex me-1 text-muted"></i>
+              <i class="fab fa-cc-diners-club me-1 text-muted"></i>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Data de Validade -->
+            <div class="col-md-6 mb-3">
+              <label for="cardExpiry" class="form-label">Validade</label>
+              <input type="text" class="form-control" id="cardExpiry" placeholder="MM/AA" maxlength="5">
+            </div>
+
+            <!-- CVV -->
+            <div class="col-md-6 mb-3">
+              <label for="cardCvv" class="form-label">CVV</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="cardCvv" placeholder="123" maxlength="4">
+                <span class="input-group-text" data-bs-toggle="tooltip" title="Código de segurança de 3 ou 4 dígitos">
+                  <i class="fas fa-question-circle text-muted"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nome do Titular -->
+          <div class="mb-3">
+            <label for="cardName" class="form-label">Nome do Titular</label>
+            <input type="text" class="form-control" id="cardName" placeholder="Como está no cartão">
+          </div>
+
+          <!-- CPF -->
+          <div class="mb-4">
+            <label for="cardCpf" class="form-label">CPF do Titular</label>
+            <input type="text" class="form-control" id="cardCpf" placeholder="000.000.000-00">
+          </div>
+
+          <!-- Parcelamento -->
+          <div class="mb-4">
+            <label for="installments" class="form-label">Parcelamento</label>
+            <select class="form-select" id="installments">
+              <option value="1">1x de R$ <?php echo number_format($total, 2, ',', '.'); ?> sem juros</option>
+              <option value="2">2x de R$ <?php echo number_format($total/2, 2, ',', '.'); ?> sem juros</option>
+              <option value="3">3x de R$ <?php echo number_format($total/3, 2, ',', '.'); ?> sem juros</option>
+              <option value="4">4x de R$ <?php echo number_format($total/4, 2, ',', '.'); ?> sem juros</option>
+              <option value="5">5x de R$ <?php echo number_format($total/5, 2, ',', '.'); ?> sem juros</option>
+              <option value="6">6x de R$ <?php echo number_format($total/6, 2, ',', '.'); ?> sem juros</option>
+            </select>
+          </div>
+
+          <!-- Termos -->
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="termsAgreement">
+            <label class="form-check-label small" for="termsAgreement">
+              Concordo com os <a href="#" class="text-decoration-none">termos de serviço</a> e 
+              <a href="#" class="text-decoration-none">política de privacidade</a>
+            </label>
+          </div>
+
+          <!-- Botões -->
+          <div class="d-grid gap-2">
+            <button type="submit" class="confirm-payment-btn" id="confirmCardPayment">
+              <i class="fas fa-lock me-2"></i>
+              Finalizar Pagamento
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              <i class="fas fa-times me-2"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <style>
-/* ESTILOS DO MODAL DE PAGAMENTO */
+/* ESTILOS COMPARTILHADOS DOS MODAIS */
 .payment-modal-content {
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -327,16 +513,78 @@
   transition: all 0.3s ease;
 }
 
-.confirm-payment-btn:hover {
+.confirm-payment-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #333333, #555555);
   transform: translateY(-2px);
+}
+
+.confirm-payment-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .security-badges {
   opacity: 0.8;
 }
 
-/* Ajustes para o modal ficar centralizado e com tamanho adequado */
+/* Estilos específicos do Modal PIX */
+.qr-code-wrapper {
+  max-width: 250px;
+  padding: 20px;
+  border: 2px dashed #e9ecef;
+  border-radius: 12px;
+  background: white;
+}
+
+.expiry-timer {
+  border: 1px solid #ffc107;
+  background: #fffbf0 !important;
+}
+
+.pix-code-container .form-control {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.instructions ol {
+  padding-left: 1.2rem;
+  margin-bottom: 0;
+}
+
+.instructions li {
+  margin-bottom: 0.25rem;
+}
+
+/* Estilos específicos do Modal Cartão */
+.card-brands i {
+  font-size: 1.2rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.1);
+}
+
+.form-check-input:checked {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+/* Ajustes para os modais ficarem centralizados */
 .modal-dialog {
   max-width: 450px;
 }
@@ -358,46 +606,196 @@
   .payment-option-card {
     padding: 0.75rem;
   }
+  
+  .qr-code-wrapper {
+    max-width: 200px;
+    padding: 15px;
+  }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Configuração do modal de pagamento
-  const confirmPaymentBtn = document.getElementById('confirmPayment');
+  // Elementos dos modais
+  const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+  const pixModal = new bootstrap.Modal(document.getElementById('pixModal'));
+  const cardModal = new bootstrap.Modal(document.getElementById('cardModal'));
   
+  // Botões
+  const confirmPaymentBtn = document.getElementById('confirmPayment');
+  const copyPixCodeBtn = document.getElementById('copyPixCode');
+  const confirmPixPaymentBtn = document.getElementById('confirmPixPayment');
+  const confirmCardPaymentBtn = document.getElementById('confirmCardPayment');
+  const creditCardForm = document.getElementById('creditCardForm');
+  
+  // Contador de tempo para expiração do PIX
+  let countdownTimer;
+  
+  // Botão "Avançar" no modal de seleção
   if (confirmPaymentBtn) {
     confirmPaymentBtn.addEventListener('click', function() {
       const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
       
-      // Mostrar loading
-      const originalText = confirmPaymentBtn.innerHTML;
-      confirmPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
-      confirmPaymentBtn.disabled = true;
+      // Fecha o modal atual
+      paymentModal.hide();
       
-      // Simular processamento
       setTimeout(() => {
-        // Redirecionar para o método de pagamento selecionado
         if (selectedMethod === 'pix') {
-          window.location.href = 'index.php?route=payment&action=process&method=pix';
+          pixModal.show();
+          startCountdown();
         } else if (selectedMethod === 'card') {
-          window.location.href = 'index.php?route=payment&action=process&method=card';
+          cardModal.show();
+          initCardForm();
         }
-      }, 1500);
+      }, 300);
     });
   }
   
-  // Fechar modal com ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) {
-          bsModal.hide();
-        }
+  // Botão copiar código PIX
+  if (copyPixCodeBtn) {
+    copyPixCodeBtn.addEventListener('click', function() {
+      const pixCodeInput = document.getElementById('pixCode');
+      pixCodeInput.select();
+      pixCodeInput.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(pixCodeInput.value).then(() => {
+        // Feedback visual
+        const originalHTML = copyPixCodeBtn.innerHTML;
+        copyPixCodeBtn.innerHTML = '<i class="fas fa-check"></i>';
+        copyPixCodeBtn.classList.remove('btn-outline-secondary');
+        copyPixCodeBtn.classList.add('btn-success');
+        
+        setTimeout(() => {
+          copyPixCodeBtn.innerHTML = originalHTML;
+          copyPixCodeBtn.classList.remove('btn-success');
+          copyPixCodeBtn.classList.add('btn-outline-secondary');
+        }, 2000);
+      });
+    });
+  }
+  
+  // Botão de confirmação de pagamento PIX
+  if (confirmPixPaymentBtn) {
+    confirmPixPaymentBtn.addEventListener('click', function() {
+      processPixPayment();
+    });
+  }
+  
+  // Formulário do cartão
+  if (creditCardForm) {
+    creditCardForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      processCardPayment();
+    });
+  }
+  
+  // Função do contador regressivo PIX
+  function startCountdown() {
+    let timeLeft = 30 * 60; // 30 minutos em segundos
+    const countdownElement = document.getElementById('countdown');
+    
+    clearInterval(countdownTimer);
+    
+    countdownTimer = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(countdownTimer);
+        countdownElement.textContent = 'Expirado';
+        countdownElement.classList.add('text-danger');
+        return;
       }
+      
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      timeLeft--;
+    }, 1000);
+  }
+  
+  // Inicializar formatação do formulário do cartão
+  function initCardForm() {
+    // Formatação do número do cartão
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+      cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value.substring(0, 19);
+      });
     }
+    
+    // Formatação da data de validade
+    const cardExpiryInput = document.getElementById('cardExpiry');
+    if (cardExpiryInput) {
+      cardExpiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value.substring(0, 5);
+      });
+    }
+  }
+  
+  // Processar pagamento PIX
+  function processPixPayment() {
+    const originalText = confirmPixPaymentBtn.innerHTML;
+    confirmPixPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
+    confirmPixPaymentBtn.disabled = true;
+    
+    setTimeout(() => {
+      pixModal.hide();
+      showSuccessMessage('Pagamento confirmado!', 'Sua compra foi processada com sucesso.');
+    }, 3000);
+  }
+  
+  // Processar pagamento com cartão
+  function processCardPayment() {
+    const originalText = confirmCardPaymentBtn.innerHTML;
+    confirmCardPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+    confirmCardPaymentBtn.disabled = true;
+    
+    // Validação simples
+    const termsAgreement = document.getElementById('termsAgreement');
+    if (!termsAgreement.checked) {
+      showErrorMessage('Aceite os termos para continuar');
+      confirmCardPaymentBtn.innerHTML = originalText;
+      confirmCardPaymentBtn.disabled = false;
+      return;
+    }
+    
+    setTimeout(() => {
+      cardModal.hide();
+      showSuccessMessage('Pagamento aprovado!', 'Seu cartão foi processado com sucesso.');
+    }, 3000);
+  }
+  
+  // Mensagem de sucesso
+  function showSuccessMessage(title, text) {
+    Swal.fire({
+      icon: 'success',
+      title: title,
+      text: text,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000'
+    }).then(() => {
+      window.location.href = 'index.php?route=order&action=success';
+    });
+  }
+  
+  // Mensagem de erro
+  function showErrorMessage(text) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erro',
+      text: text,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000'
+    });
+  }
+  
+  // Resetar contador quando o modal do PIX for fechado
+  document.getElementById('pixModal').addEventListener('hidden.bs.modal', function() {
+    clearInterval(countdownTimer);
   });
 });
 </script>
