@@ -141,43 +141,266 @@
     <?php endif; ?>
 </div>
 
-<!-- Modal de Pagamento -->
+<!-- Modal de Pagamento Reformulado -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- XL = gigante -->
-    <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content payment-modal-content">
       
-      <div class="modal-header">
-        <h5 class="modal-title">Escolha o método de pagamento</h5>
+      <div class="modal-header payment-modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-credit-card me-2"></i>
+          Finalizar Compra
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
-      <div class="modal-body">
-        <div class="row text-center">
+      <div class="modal-body p-4">
+        <!-- Resumo do Pedido -->
+        <div class="order-summary-modal mb-4 p-3">
+          <h6 class="summary-subtitle mb-3">Resumo do Pedido</h6>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Subtotal:</span>
+            <span>R$ <?php echo number_format($total, 2, ',', '.'); ?></span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Descontos:</span>
+            <span class="text-success">- R$ 0,00</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Taxas:</span>
+            <span class="text-muted">Grátis</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between align-items-center">
+            <strong>Total:</strong>
+            <strong class="final-price-custom">R$ <?php echo number_format($total, 2, ',', '.'); ?></strong>
+          </div>
+        </div>
 
+        <h6 class="mb-3">Escolha o método de pagamento:</h6>
+        
+        <div class="payment-options">
           <!-- PIX -->
-          <div class="col-md-6">
-            <div class="p-4 border rounded">
-              <h4>PIX</h4>
-              <p>Pague rápido escaneando o QR Code.</p>
-              <form action="index.php?route=payment&action=process" method="POST">
-                <input type="hidden" name="payment_method" value="pix">
-                <button type="submit" class="payment-btn">Pagar com PIX</button>
-
-              </form>
+          <div class="payment-option-card mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="pixOption" value="pix" checked>
+              <label class="form-check-label w-100" for="pixOption">
+                <div class="d-flex align-items-center">
+                  <div class="payment-icon me-3">
+                    <i class="fas fa-qrcode"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">PIX</h6>
+                    <p class="text-muted mb-0 small">Pagamento instantâneo • Sem taxas</p>
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
 
-          <!-- CARTÃO -->
-          <div class="col-md-6">
-            <div class="p-4 border rounded">
-              <h4>Cartão de Crédito</h4>
-              <p>Pagamento com bandeiras aceitas.</p>
-              <form action="index.php?route=payment&action=process" method="POST">
-                <input type="hidden" name="payment_method" value="card">
-                <button type="submit" class="payment-btn">Pagar com Cartão</button>
-
-              </form>
+          <!-- CARTÃO DE CRÉDITO -->
+          <div class="payment-option-card">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="cardOption" value="card">
+              <label class="form-check-label w-100" for="cardOption">
+                <div class="d-flex align-items-center">
+                  <div class="payment-icon me-3">
+                    <i class="far fa-credit-card"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">Cartão de Crédito</h6>
+                    <p class="text-muted mb-0 small">Até 12x sem juros • Todas as bandeiras</p>
+                  </div>
+                </div>
+              </label>
             </div>
+          </div>
+        </div>
+
+        <!-- Botão de Confirmação -->
+        <div class="mt-4">
+          <button type="button" class="confirm-payment-btn w-100" id="confirmPayment">
+            <i class="fas fa-lock me-2"></i>
+            Confirmar Pagamento
+          </button>
+          
+          <div class="security-badges mt-3 text-center">
+            <small class="text-muted">
+              <i class="fas fa-shield-alt me-1"></i>
+              Compra 100% segura •
+              <i class="fas fa-lock me-1"></i>
+              Pagamento criptografado
+            </small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+/* ESTILOS DO MODAL DE PAGAMENTO */
+.payment-modal-content {
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: none;
+  overflow: hidden;
+}
+
+.payment-modal-header {
+  background: linear-gradient(135deg, #000000, #333333);
+  color: white;
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+.payment-modal-header .modal-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.payment-modal-header .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.order-summary-modal {
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.summary-subtitle {
+  font-weight: 600;
+  color: #000000;
+  font-size: 0.9rem;
+}
+
+.payment-option-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 2px solid #f0f0f0;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.payment-option-card:hover {
+  border-color: #000000;
+  transform: translateY(-2px);
+}
+
+.payment-option-card .form-check-input:checked {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.payment-option-card .form-check-input {
+  margin-top: 0.3rem;
+}
+
+.payment-icon {
+  font-size: 1.5rem;
+  color: #000000;
+  width: 40px;
+  text-align: center;
+}
+
+.payment-option-card h6 {
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.confirm-payment-btn {
+  background: linear-gradient(135deg, #000000, #333333);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-payment-btn:hover {
+  background: linear-gradient(135deg, #333333, #555555);
+  transform: translateY(-2px);
+}
+
+.security-badges {
+  opacity: 0.8;
+}
+
+/* Ajustes para o modal ficar centralizado e com tamanho adequado */
+.modal-dialog {
+  max-width: 450px;
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 1rem;
+  }
+  
+  .payment-modal-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .modal-body {
+    padding: 1.25rem;
+  }
+  
+  .payment-option-card {
+    padding: 0.75rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Configuração do modal de pagamento
+  const confirmPaymentBtn = document.getElementById('confirmPayment');
+  
+  if (confirmPaymentBtn) {
+    confirmPaymentBtn.addEventListener('click', function() {
+      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      
+      // Mostrar loading
+      const originalText = confirmPaymentBtn.innerHTML;
+      confirmPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+      confirmPaymentBtn.disabled = true;
+      
+      // Simular processamento
+      setTimeout(() => {
+        // Redirecionar para o método de pagamento selecionado
+        if (selectedMethod === 'pix') {
+          window.location.href = 'index.php?route=payment&action=process&method=pix';
+        } else if (selectedMethod === 'card') {
+          window.location.href = 'index.php?route=payment&action=process&method=card';
+        }
+      }, 1500);
+    });
+  }
+  
+  // Fechar modal com ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('paymentModal');
+      if (modal) {
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) {
+          bsModal.hide();
+        }
+      }
+    }
+  });
+});
+</script>
           </div>
 
         </div>
