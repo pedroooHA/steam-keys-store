@@ -106,10 +106,10 @@
                         </div>
                     </div>
 
-                    <div class="summary-actions mt-4">
-                        <button class="add-to-cart-btn-custom w-100 checkout-btn">
-                            <i class="fas fa-lock me-2"></i>Finalizar Compra
-                        </button>
+  <button class="add-to-cart-btn-custom w-100 checkout-btn"
+        data-bs-toggle="modal" data-bs-target="#paymentModal">
+    <i class="fas fa-lock me-2"></i> Finalizar Compra
+</button>
 
                         <div class="security-badges mt-3 text-center">
                             <small class="text-muted">
@@ -141,6 +141,53 @@
     <?php endif; ?>
 </div>
 
+<!-- Modal de Pagamento -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- XL = gigante -->
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Escolha o método de pagamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row text-center">
+
+          <!-- PIX -->
+          <div class="col-md-6">
+            <div class="p-4 border rounded">
+              <h4>PIX</h4>
+              <p>Pague rápido escaneando o QR Code.</p>
+              <form action="index.php?route=payment&action=process" method="POST">
+                <input type="hidden" name="payment_method" value="pix">
+                <button type="submit" class="payment-btn">Pagar com PIX</button>
+
+              </form>
+            </div>
+          </div>
+
+          <!-- CARTÃO -->
+          <div class="col-md-6">
+            <div class="p-4 border rounded">
+              <h4>Cartão de Crédito</h4>
+              <p>Pagamento com bandeiras aceitas.</p>
+              <form action="index.php?route=payment&action=process" method="POST">
+                <input type="hidden" name="payment_method" value="card">
+                <button type="submit" class="payment-btn">Pagar com Cartão</button>
+
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <?php require __DIR__ . '/../layout/footer.php'; ?>
 
 <!-- SweetAlert2 (modal bonito) -->
@@ -148,6 +195,23 @@
 
 <style>
 /* ESTILOS CONSISTENTES COM OS OUTROS CARDS */
+
+.payment-btn {
+    background: linear-gradient(45deg, #5d5c5cff, #000000ff);  /* azul gamer */
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.payment-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
 .page-container {
     max-width: 1400px;
     margin: 0 auto;

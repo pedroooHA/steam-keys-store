@@ -262,7 +262,7 @@
                         </div>
                         <h4>Cadastrar Jogo</h4>
                         <p>Adicione um novo jogo ao catálogo</p>
-                        <a href="/?route=admin&action=add-game" class="action-btn">Acessar</a>
+                        <a href="index.php?route=games&action=create" class="action-btn">Acessar</a>
                     </div>
                     
                     <div class="action-card">

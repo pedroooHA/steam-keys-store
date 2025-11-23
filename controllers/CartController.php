@@ -172,4 +172,22 @@ class CartController
         header('Location: index.php?route=cart');
         exit;
     }
+
+    public function payment()
+{
+    $cartItems = $_SESSION['cart'] ?? [];
+
+    if (empty($cartItems)) {
+        header("Location: index.php?route=cart&action=show");
+        exit;
+    }
+
+    $total = 0;
+    foreach ($cartItems as $item) {
+        $total += $item['preco'] * $item['quantidade'];
+    }
+
+    require __DIR__ . '/../views/cart/payment.php'; // você vai criar essa view
+}
+
 }

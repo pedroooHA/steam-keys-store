@@ -122,6 +122,17 @@ switch($route){
         }
         break;
 
+    case 'payment':
+    require __DIR__ . '/../controllers/PaymentController.php';
+    $controller = new PaymentController();
+
+    $action = $_GET['action'] ?? 'process';
+    if (method_exists($controller, $action)) {
+        $controller->$action();
+    } else {
+        echo "Ação inválida";
+    }
+    break;
     default:
         http_response_code(404);
         echo 'Página não encontrada';
