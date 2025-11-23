@@ -12,7 +12,25 @@ function isAdmin() {
 // Redireciona se não for admin
 function requireAdmin() {
     if (!isAdmin()) {
-        header("Location: index.php?controller=auth&action=login");
+        header("Location: /?route=login");
         exit();
     }
 }
+
+// Verifica se o usuário está logado
+function requireLogin() {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: /?route=login");
+        exit();
+    }
+}
+
+// Obtém o usuário atual
+function getCurrentUser() {
+    if (isset($_SESSION['user_id'])) {
+        require_once __DIR__ . '/../models/User.php';
+        return User::findById($_SESSION['user_id']);
+    }
+    return null;
+}
+?>

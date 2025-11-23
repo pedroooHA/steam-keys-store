@@ -1,80 +1,75 @@
 <?php
 class AdminController {
     public function dashboard() {
-        // Verificar se é admin
-        if (empty($_SESSION['user_id'])) {
-            header("Location: index.php?route=login");
-            exit;
-        }
+        requireAdmin(); // Usa sua função existente
         
-        $user = User::findById($_SESSION['user_id']);
-        if ($user->getRole() !== 'admin') { // ✅ CORRIGIDO
-            header("Location: index.php");
-            exit;
-        }
+        $user = getCurrentUser(); // Usa a nova função helper
         
-        // Aqui você pode buscar estatísticas do banco
-        include '../views/admin/dashboard.php';
+        // Estatísticas
+        $total_games = count(Game::all());
+        $total_users = User::countAll();
+        $total_categories = $this->getCategoriesCount();
+        
+        include __DIR__ . '/../views/admin/dashboard.php';
     }
-    
+
     public function showUsers() {
-        // Verificar admin
-        if (empty($_SESSION['user_id'])) {
-            header("Location: index.php?route=login");
-            exit;
-        }
+        requireAdmin();
         
-        $user = User::findById($_SESSION['user_id']);
-        if ($user->getRole() !== 'admin') { // ✅ CORRIGIDO
-            header("Location: index.php");
-            exit;
-        }
-        
-        // Buscar todos os usuários
         $users = User::getAll();
-        include '../views/admin/users.php';
+        include __DIR__ . '/../views/admin/users.php';
     }
-    
-    public function manageUsers() {
-        // Lógica para gerenciar usuários (POST)
-        // Implementar conforme necessidade
-    }
-    
+
     public function showAddGame() {
-        // Verificar admin
-        if (empty($_SESSION['user_id'])) {
-            header("Location: index.php?route=login");
-            exit;
-        }
-        
-        $user = User::findById($_SESSION['user_id']);
-        if ($user->getRole() !== 'admin') { // ✅ CORRIGIDO
-            header("Location: index.php");
-            exit;
-        }
-        
-        include '../views/admin/add_game.php';
+        requireAdmin();
+
+        $categories = $this->getAllCategories();
+        include __DIR__ . '/../views/admin/add-game.php';
     }
-    
+
     public function addGame() {
-        // Lógica para adicionar jogo (POST)
-        // Implementar conforme necessidade
+        requireAdmin();
+
+        if ($_POST) {
+            $game = new Game();
+            $game->setTitle($_POST['title']);
+            $game->setPrice($_POST['price']);
+            $game->setCategoryId($_POST['category_id'] ?: null);
+            $game->setSteamKey($_POST['steam_key']);
+            $game->setDescription($_POST['description']);
+            $game->setImage($_POST['image']);
+            
+            try {
+                $game->save();
+                $_SESSION['success'] = 'Jogo cadastrado com sucesso!';
+                header('Location: /?route=admin&action=dashboard');
+                exit;
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Erro ao cadastrar jogo: ' . $e->getMessage();
+            }
+        }
+
+        header('Location: /?route=admin&action=add-game');
+        exit;
     }
-    
+
     public function showReports() {
-        // Verificar admin
-        if (empty($_SESSION['user_id'])) {
-            header("Location: index.php?route=login");
-            exit;
-        }
+        requireAdmin();
         
-        $user = User::findById($_SESSION['user_id']);
-        if ($user->getRole() !== 'admin') { // ✅ CORRIGIDO
-            header("Location: index.php");
-            exit;
-        }
-        
-        include '../views/admin/reports.php';
+        include __DIR__ . '/../views/admin/reports.php';
+    }
+
+    private function getCategoriesCount() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM categories");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    private function getAllCategories() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->query("SELECT * FROM categories ORDER BY name");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
