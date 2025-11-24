@@ -17,7 +17,7 @@
         .admin-header {
             text-align: center;
             padding: 40px 30px;
-            background: #1e1e1e;
+            background: #000000ff;
             border-radius: 18px;
             color: #fff;
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
@@ -51,7 +51,7 @@
         }
 
         .stat-card {
-            background: #1e1e1e;
+            background: #000000ff;
             border-radius: 16px;
             padding: 25px;
             display: flex;
@@ -80,7 +80,7 @@
 
         .stat-icon i {
             font-size: 1.8rem;
-            color: #121212;
+            color: #000000ff;
         }
 
         .stat-info h3 {
@@ -114,7 +114,7 @@
         }
 
         .action-card {
-            background: #1e1e1e;
+            background: #000000ff;
             border-radius: 18px;
             padding: 30px 25px;
             text-align: center;
@@ -198,6 +198,8 @@
 </head>
 <body>
     <?php require __DIR__ . '/../layout/header.php'; ?>
+
+    <?php $user = getCurrentUser(); ?>
     
     <main class="main-content">
         <div class="admin-container">

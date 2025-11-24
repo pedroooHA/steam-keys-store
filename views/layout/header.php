@@ -32,7 +32,8 @@
         <!--  NOVO: Link do Painel Admin (apenas para administradores) -->
        <?php if($me->getRole() == 'admin'): ?>
             <li class="nav-item">
-                <a class="nav-link text-warning" href="index.php?route=admin">
+                <a class="nav-link text-warning" href="index.php?route=admin&action=dashboard">
+
                     <i class="fas fa-cog"></i> Painel de Controle
                 </a>
             </li>

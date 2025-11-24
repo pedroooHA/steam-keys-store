@@ -238,7 +238,7 @@
     <div class="register-container">
         <div class="logo">
             <i class="fas fa-gem"></i>
-            <h1>BlackLabel</h1>
+            <h1>Nexus Keys</h1>
         </div>
         
         <div class="register-header">

@@ -6,8 +6,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verifica se o usuário logado é admin
 function isAdmin() {
-    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    $user = getCurrentUser();
+    return $user && $user->getRole() === 'admin';
 }
+
 
 // Redireciona se não for admin
 function requireAdmin() {

@@ -252,7 +252,7 @@
     <div class="login-container">
         <div class="logo">
             <i class="fas fa-gem"></i>
-            <h1>BlackLabel</h1>
+            <h1>Nexus Keys</h1>
         </div>
         
         <div class="login-header">
@@ -277,13 +277,6 @@
                 </div>
             </div>
             
-            <div class="remember-forgot">
-                <label class="remember">
-                    <input type="checkbox" name="remember">
-                    Lembrar-me
-                </label>
-                <a href="#" class="forgot">Esqueceu a senha?</a>
-            </div>
             
             <button type="submit" class="btn-primary">Continuar</button>
         </form>

@@ -107,8 +107,6 @@ switch($route){
         
         if ($action === 'dashboard') {
             $c->dashboard();
-        } elseif ($action === 'users' && $method === 'POST') {
-            $c->manageUsers();
         } elseif ($action === 'users') {
             $c->showUsers();
         } elseif ($action === 'add-game' && $method === 'POST') {
