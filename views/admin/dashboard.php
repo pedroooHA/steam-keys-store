@@ -255,46 +255,46 @@
             </div>
 
             <!-- Ações Rápidas -->
-            <div class="admin-actions">
-                <h2>Ações Rápidas</h2>
-                <div class="row">
-                    <div class="action-card">
-                        <div class="action-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <h4>Cadastrar Jogo</h4>
-                        <p>Adicione um novo jogo ao catálogo</p>
-                        <a href="index.php?route=games&action=create" class="action-btn">Acessar</a>
-                    </div>
-                    
-                    <div class="action-card">
-                        <div class="action-icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <h4>Gerenciar Jogos</h4>
-                        <p>Edite ou remova jogos existentes</p>
-                        <a href="/?route=games&action=list" class="action-btn">Acessar</a>
-                    </div>
-                    
-                    <div class="action-card">
-                        <div class="action-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <h4>Gerenciar Usuários</h4>
-                        <p>Visualize e gerencie usuários</p>
-                        <a href="/?route=admin&action=users" class="action-btn">Acessar</a>
-                    </div>
-
-                    <div class="action-card">
-                        <div class="action-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h4>Relatórios</h4>
-                        <p>Visualize relatórios de vendas</p>
-                        <a href="/?route=admin&action=reports" class="action-btn">Acessar</a>
-                    </div>
-                </div>
+<div class="admin-actions">
+    <h2>Ações Rápidas</h2>
+    <div class="row">
+        <div class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-plus"></i>
             </div>
+            <h4>Cadastrar Jogo</h4>
+            <p>Adicione um novo jogo ao catálogo</p>
+            <a href="?route=games&action=create" class="action-btn">Acessar</a>
+        </div>
+        
+        <div class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-list"></i>
+            </div>
+            <h4>Gerenciar Jogos</h4>
+            <p>Edite ou remova jogos existentes</p>
+            <a href="?route=games&action=list" class="action-btn">Acessar</a>
+        </div>
+        
+        <div class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-users-cog"></i>
+            </div>
+            <h4>Gerenciar Usuários</h4>
+            <p>Visualize e gerencie usuários</p>
+            <a href="?route=admin&action=users" class="action-btn">Acessar</a>
+        </div>
+
+        <div class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h4>Relatórios</h4>
+            <p>Visualize relatórios de vendas</p>
+            <a href="?route=admin&action=reports" class="action-btn">Acessar</a>
+        </div>
+    </div>
+</div>
         </div>
     </main>
 

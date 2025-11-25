@@ -1,71 +1,145 @@
 <?php
-
 class Category {
-    public $id;
-    public $name;
+    private $id;
+    private $name;
 
-    // Construtor para preencher os dados
-    public function __construct($data = []) {
-        $this->id   = $data['id']   ?? null;
-        $this->name = $data['name'] ?? null;
+    // Getters e Setters
+    public function getId() {
+        return $this->id;
     }
 
-    public function getId()    { return $this->id; }
-    public function getName()  { return $this->name; }
-    public function setName($v){ $this->name = $v; }
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
 
-    // --- PEGAR TODAS AS CATEGORIAS ---
-    public static function all() {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->query('SELECT * FROM categories ORDER BY id DESC');
+    public function getName() {
+        return $this->name;
+    }
 
-        // ⚠️ AQUI ESTAVA O PROBLEMA:
-        // PDO::FETCH_CLASS IGNORA O CONSTRUTOR
-        // ENTÃO AGORA CRIAMOS O OBJETO MANUALMENTE
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $categories = [];
+    public function setName($name) {
+        $this->name = trim($name);
+        return $this;
+    }
 
-        foreach ($rows as $row) {
-            $categories[] = new Category($row);
+    // Método para salvar (inserir ou atualizar)
+    public function save() {
+        $db = Database::getConnection();
+        
+        if ($this->id) {
+            // Update
+            $stmt = $db->prepare("UPDATE categories SET name = ? WHERE id = ?");
+            $stmt->execute([$this->name, $this->id]);
+        } else {
+            // Insert
+            $stmt = $db->prepare("INSERT INTO categories (name) VALUES (?)");
+            $stmt->execute([$this->name]);
+            $this->id = $db->lastInsertId();
         }
+        
+        return $this;
+    }
 
+    // Método para deletar
+    public function delete() {
+        if (!$this->id) {
+            throw new Exception("Categoria não possui ID");
+        }
+        
+        $db = Database::getConnection();
+        $stmt = $db->prepare("DELETE FROM categories WHERE id = ?");
+        return $stmt->execute([$this->id]);
+    }
+
+    // ========== MÉTODOS ESTÁTICOS ==========
+
+    // Buscar categoria por ID
+    public static function findById($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT * FROM categories WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($data) {
+            return self::createFromArray($data);
+        }
+        return null;
+    }
+
+    // Buscar categoria por nome
+    public static function findByName($name) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT * FROM categories WHERE name = ?");
+        $stmt->execute([trim($name)]);
+        
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($data) {
+            return self::createFromArray($data);
+        }
+        return null;
+    }
+
+    // Buscar todas as categorias
+    public static function all() {
+        $db = Database::getConnection();
+        $stmt = $db->query("SELECT * FROM categories ORDER BY name");
+        $categories = [];
+        
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $categories[] = self::createFromArray($data);
+        }
+        
         return $categories;
     }
 
-    public static function findById($id) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM categories WHERE id = ?');
-        $stmt->execute([$id]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $data ? new Category($data) : null;
-    }
-
-    public static function findByName($name) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM categories WHERE name = ?');
-        $stmt->execute([$name]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $data ? new Category($data) : null;
-    }
-
+    // Criar categoria diretamente (para bulk create)
     public static function create($name) {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('INSERT INTO categories (name) VALUES (?)');
-        $stmt->execute([$name]);
-        return $pdo->lastInsertId();
+        $category = new self();
+        $category->setName($name);
+        $category->save();
+        return $category->getId();
     }
 
-    public function save() {
-        $pdo = Database::getConnection();
-        if ($this->id) {
-            // Atualizar categoria existente
-            $stmt = $pdo->prepare('UPDATE categories SET name=? WHERE id=?');
-            $stmt->execute([$this->name, $this->id]);
-        } else {
-            // Criar categoria nova
-            $stmt = $pdo->prepare('INSERT INTO categories (name) VALUES (?)');
-            $stmt->execute([$this->name]);
-            $this->id = $pdo->lastInsertId();
+    // Contar total de categorias
+    public static function count() {
+        $db = Database::getConnection();
+        $stmt = $db->query("SELECT COUNT(*) as total FROM categories");
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
+    // Buscar categorias com paginação
+    public static function paginate($page = 1, $perPage = 10) {
+        $db = Database::getConnection();
+        $offset = ($page - 1) * $perPage;
+        
+        $stmt = $db->prepare("SELECT * FROM categories ORDER BY name LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', (int)$perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $categories = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $categories[] = self::createFromArray($data);
         }
+        
+        return $categories;
+    }
+
+    // Verificar se categoria existe
+    public static function exists($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM categories WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+    }
+
+    // ========== MÉTODOS PRIVADOS ==========
+
+    // Criar objeto a partir de array
+    private static function createFromArray($data) {
+        $category = new self();
+        $category->setId($data['id'])
+                 ->setName($data['name']);
+        return $category;
     }
 }

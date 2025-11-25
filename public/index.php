@@ -98,7 +98,7 @@ switch($route){
         }
         break;
 
-    // ✅ NOVA ROTA: PAINEL ADMINISTRATIVO
+    // ✅ ROTA: PAINEL ADMINISTRATIVO (ATUALIZADA)
     case 'admin':
         requireAdmin(); // Garante que só admins acessem
         
@@ -109,6 +109,10 @@ switch($route){
             $c->dashboard();
         } elseif ($action === 'users') {
             $c->showUsers();
+        } elseif ($action === 'edit_user') {
+            $c->editUser();
+        } elseif ($action === 'delete_user') {
+            $c->deleteUser();
         } elseif ($action === 'add-game' && $method === 'POST') {
             $c->addGame();
         } elseif ($action === 'add-game') {

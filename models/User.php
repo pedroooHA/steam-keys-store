@@ -83,5 +83,18 @@ class User {
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         return $data ? new User($data) : null;
     }
+   
+    public function update() {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?');
+        return $stmt->execute([$this->name, $this->email, $this->role, $this->id]);
+    }
+
+    public static function delete($id) {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
+        return $stmt->execute([$id]);
+    }
+
 }
 ?>

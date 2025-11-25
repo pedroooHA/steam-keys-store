@@ -478,75 +478,44 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ========== FUNCIONALIDADES DAS CATEGORIAS EM MASSA ==========
-    const bulkAddBtn = document.getElementById('bulkAddBtn');
-    const categoriesList = document.getElementById('categoriesList');
-    const notificationArea = document.getElementById('notificationArea');
+ // ========== FUNCIONALIDADES DAS CATEGORIAS EM MASSA ==========
+const bulkAddBtn = document.getElementById('bulkAddBtn');
+const categoriesList = document.getElementById('categoriesList');
+const notificationArea = document.getElementById('notificationArea');
 
-    function showNotification(message, type = 'success') {
-        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-        const icon = type === 'success' ? '✅' : '❌';
-        
-        notificationArea.innerHTML = '';
-        const notification = document.createElement('div');
-        notification.className = `alert ${alertClass} alert-dismissible fade show notification-card`;
-        notification.innerHTML = `<strong>${icon} ${message}</strong><button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-        notificationArea.appendChild(notification);
-        
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
+// Função simplificada de notificação
+function showNotification(message, type = 'success') {
+    console.log('Mostrando notificação:', message, type);
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? '✅' : '❌';
+    
+    notificationArea.innerHTML = '';
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show notification-card`;
+    notification.innerHTML = `<strong>${icon} ${message}</strong><button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    notificationArea.appendChild(notification);
+}
+
+// TESTE SIMPLES - verificar se o botão funciona
+console.log('bulkAddBtn encontrado:', bulkAddBtn);
+console.log('categoriesList encontrado:', categoriesList);
+
+bulkAddBtn.addEventListener('click', function() {
+    console.log('🎯 BOTÃO CLICADO - função executando!');
+    
+    const categoriesText = categoriesList.value.trim();
+    console.log('Texto digitado:', categoriesText);
+    
+    if (!categoriesText) {
+        showNotification('Por favor, digite pelo menos uma categoria.', 'error');
+        return;
     }
-
-    bulkAddBtn.addEventListener('click', async function() {
-        const categoriesText = categoriesList.value.trim();
-        
-        if (!categoriesText) {
-            showNotification('Por favor, digite pelo menos uma categoria.', 'error');
-            return;
-        }
-
-        bulkAddBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
-        bulkAddBtn.disabled = true;
-
-        try {
-            const response = await fetch('index.php?route=categories&action=bulkCreate', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: 'categories_list=' + encodeURIComponent(categoriesText)
-            });
-
-            const result = await response.json();
-            
-            if (result.success) {
-                showNotification(result.message);
-                categoriesList.value = '';
-                if (result.newCategories) {
-                    result.newCategories.forEach(cat => {
-                        const option = document.createElement('option');
-                        option.value = cat.id;
-                        option.textContent = cat.name;
-                        categorySelect.appendChild(option);
-                    });
-                }
-            } else {
-                showNotification(result.message, 'error');
-            }
-
-        } catch (error) {
-            const categoriesArray = categoriesText.split('\n').filter(cat => cat.trim() !== '');
-            const inserted = Math.max(1, Math.min(categoriesArray.length, Math.floor(categoriesArray.length * 0.7)));
-            const skipped = categoriesArray.length - inserted;
-            
-            showNotification(`🔒 MODO OFFLINE: ${inserted} categorias preparadas. ${skipped} duplicatas. (Salve no banco quando estiver em rede livre)`);
-            categoriesList.value = '';
-        } finally {
-            bulkAddBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Adicionar Todas as Categorias';
-            bulkAddBtn.disabled = false;
-        }
-    });
+    
+    // Mostrar notificação de teste
+    showNotification('Funcionou! Texto: ' + categoriesText, 'success');
+    
+    // Limpar o campo
+    categoriesList.value = '';
 });
 </script>
 

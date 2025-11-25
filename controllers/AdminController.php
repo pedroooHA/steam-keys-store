@@ -1,9 +1,9 @@
 <?php
 class AdminController {
     public function dashboard() {
-        requireAdmin(); // Usa sua função existente
+        requireAdmin();
         
-        $user = getCurrentUser(); // Usa a nova função helper
+        $user = getCurrentUser();
         
         // Estatísticas
         $total_games = count(Game::all());
@@ -20,6 +20,70 @@ class AdminController {
         include __DIR__ . '/../views/admin/users.php';
     }
 
+    public function editUser() {
+        requireAdmin();
+        
+        $userId = $_GET['id'] ?? null;
+        if (!$userId) {
+            $_SESSION['error'] = 'ID do usuário não especificado';
+            header('Location: ?route=admin&action=users');
+            exit;
+        }
+        
+        $user = User::findById($userId);
+        if (!$user) {
+            $_SESSION['error'] = 'Usuário não encontrado';
+            header('Location: ?route=admin&action=users');
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $user->setName($_POST['name']);
+                $user->setEmail($_POST['email']);
+                $user->setRole($_POST['role']);
+                
+                $user->update();
+                $_SESSION['success'] = 'Usuário atualizado com sucesso!';
+                header('Location: ?route=admin&action=users');
+                exit;
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Erro ao atualizar usuário: ' . $e->getMessage();
+            }
+        }
+        
+        include __DIR__ . '/../views/admin/edit-user.php';
+    }
+
+    public function deleteUser() {
+        requireAdmin();
+        
+        $userId = $_GET['id'] ?? null;
+        if (!$userId) {
+            $_SESSION['error'] = 'ID do usuário não especificado';
+            header('Location: ?route=admin&action=users');
+            exit;
+        }
+        
+        // Impedir que o admin se delete
+        $currentUser = getCurrentUser();
+        if ($userId == $currentUser->getId()) {
+            $_SESSION['error'] = "Você não pode excluir sua própria conta!";
+            header('Location: ?route=admin&action=users');
+            exit;
+        }
+        
+        try {
+            User::delete($userId);
+            $_SESSION['success'] = 'Usuário excluído com sucesso!';
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Erro ao excluir usuário: ' . $e->getMessage();
+        }
+        
+        header('Location: ?route=admin&action=users');
+        exit;
+    }
+
     public function showAddGame() {
         requireAdmin();
 
@@ -30,7 +94,7 @@ class AdminController {
     public function addGame() {
         requireAdmin();
 
-        if ($_POST) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $game = new Game();
             $game->setTitle($_POST['title']);
             $game->setPrice($_POST['price']);
@@ -42,14 +106,14 @@ class AdminController {
             try {
                 $game->save();
                 $_SESSION['success'] = 'Jogo cadastrado com sucesso!';
-                header('Location: /?route=admin&action=dashboard');
+                header('Location: ?route=admin&action=dashboard');
                 exit;
             } catch (Exception $e) {
                 $_SESSION['error'] = 'Erro ao cadastrar jogo: ' . $e->getMessage();
             }
         }
 
-        header('Location: /?route=admin&action=add-game');
+        header('Location: ?route=admin&action=add-game');
         exit;
     }
 
