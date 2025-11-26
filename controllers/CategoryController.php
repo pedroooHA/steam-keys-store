@@ -10,37 +10,38 @@ class CategoryController {
         $this->authorize();
         
         $category = new Category();
-        $category->setName($_POST['name'] ?? '');
-        $category->save();
+        $category->setName(trim($_POST['name'] ?? ''));
         
+        if (empty($category->getName())) {
+            $_SESSION['flash'] = 'Nome da categoria é obrigatório';
+            header('Location: index.php?route=categories');
+            exit;
+        }
+        
+        $category->save();
         header('Location: index.php?route=categories');
     }
 
-    // Método para inserção em massa
+    // 👇 MÉTODO BULKCREATE CORRIGIDO
     public function bulkCreate(){
         $this->authorize();
-        
-        // Configurar header para JSON
         header('Content-Type: application/json');
         
-        // Verificar se é uma requisição POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Método não permitido'
-            ]);
-            exit;
-        }
-
         try {
-            $categoriesList = trim($_POST['categories_list'] ?? '');
+            // Ler dados JSON
+            $input = json_decode(file_get_contents('php://input'), true);
             
-            if (empty($categoriesList)) {
-                throw new Exception('Lista de categorias vazia');
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Dados JSON inválidos');
             }
             
-            // Processar a lista de categorias
-            $categoriesArray = explode("\n", $categoriesList);
+            $categoriesArray = $input['categories'] ?? [];
+            
+            if (empty($categoriesArray)) {
+                throw new Exception('Nenhuma categoria recebida');
+            }
+            
+            // Processar categorias
             $categoriesArray = array_map('trim', $categoriesArray);
             $categoriesArray = array_filter($categoriesArray);
             
@@ -53,15 +54,17 @@ class CategoryController {
             $newCategories = [];
             
             foreach ($categoriesArray as $categoryName) {
-                // Verificar se a categoria já existe
-                $existingCategory = Category::findByName($categoryName);
+                if (empty($categoryName)) continue;
                 
-                if (!$existingCategory) {
-                    // Criar nova categoria
-                    $newCategoryId = Category::create($categoryName);
+                // Verificar se já existe
+                if (!Category::exists($categoryName)) {
+                    $category = new Category();
+                    $category->setName($categoryName);
+                    $categoryId = $category->save();
+                    
                     $inserted++;
                     $newCategories[] = [
-                        'id' => $newCategoryId,
+                        'id' => $categoryId,
                         'name' => $categoryName
                     ];
                 } else {
@@ -69,17 +72,16 @@ class CategoryController {
                 }
             }
             
-            // Retornar sucesso
             echo json_encode([
                 'success' => true,
-                'message' => "✅ Sucesso! $inserted novas categorias adicionadas. $skipped categorias já existiam e foram ignoradas.",
+                'message' => "✅ Sucesso! $inserted categorias adicionadas. $skipped já existiam.",
                 'inserted' => $inserted,
                 'skipped' => $skipped,
                 'newCategories' => $newCategories
             ]);
             
         } catch (Exception $e) {
-            // Retornar erro
+            http_response_code(400);
             echo json_encode([
                 'success' => false,
                 'message' => '❌ Erro: ' . $e->getMessage()
@@ -88,7 +90,6 @@ class CategoryController {
         exit;
     }
     
-    // Método para API - retornar todas as categorias em JSON
     public function getAll() {
         header('Content-Type: application/json');
         $categories = Category::all();
@@ -105,11 +106,12 @@ class CategoryController {
         exit;
     }
     
-    private function authorize(){
-        if(empty($_SESSION['user_id'])) {
+    private function authorize() {
+        if (empty($_SESSION['user_id'])) {
             $_SESSION['flash'] = 'Faça login para acessar';
             header('Location: index.php?route=login');
             exit;
         }
     }
 }
+?>

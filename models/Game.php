@@ -1,65 +1,112 @@
 <?php
-
 class Game {
-    // Propriedades da classe
-    private $id, $title, $price, $category_id, $steam_key, $description, $image;
+    private $id;
+    private $title;
+    private $price;
+    private $category_id;
+    private $steam_key;
+    private $description;
+    private $image;
+    private $estoque;
     
-    // Getters e Setters (Mantenha os seus se já os tiver)
-    public function getId(){ return $this->id; }
-    public function getTitle(){ return $this->title; }
-    public function setTitle($v){ $this->title = $v; }
-    public function getPrice(){ return $this->price; }
-    public function setPrice($v){ $this->price = $v; }
-    public function getCategoryId(){ return $this->category_id; }
-    public function setCategoryId($v){ $this->category_id = $v; }
-    public function getSteamKey(){ return $this->steam_key; }
-    public function setSteamKey($v){ $this->steam_key = $v; }
-    public function getDescription(){ return $this->description; }
-    public function setDescription($v){ $this->description = $v; }
-    public function getImage(){ return $this->image; }
-    public function setImage($v){ $this->image = $v; }
+    // Getters
+    public function getId() { return $this->id; }
+    public function getTitle() { return $this->title; }
+    public function getPrice() { return $this->price; }
+    public function getCategoryId() { return $this->category_id; }
+    public function getSteamKey() { return $this->steam_key; }
+    public function getDescription() { return $this->description; }
+    public function getImage() { return $this->image; }
+    public function getEstoque() { return $this->estoque; }
+    
+    // Setters
+    public function setTitle($v) { $this->title = $v; }
+    public function setPrice($v) { $this->price = floatval($v); }
+    public function setCategoryId($v) { $this->category_id = $v ? intval($v) : null; }
+    public function setSteamKey($v) { $this->steam_key = $v; }
+    public function setDescription($v) { $this->description = $v; }
+    public function setImage($v) { $this->image = $v; }
+    public function setEstoque($v) { $this->estoque = intval($v); }
 
-    // --- MÉTODOS DE BANCO DE DADOS PADRONIZADOS ---
-
+    // Métodos estáticos
     public static function all() {
         $pdo = Database::getConnection();
-        $sql = "SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id ORDER BY g.title";
-        return $pdo->query($sql)->fetchAll();
+        $sql = "SELECT g.*, c.name as category_name 
+                FROM games g 
+                LEFT JOIN categories c ON g.category_id = c.id 
+                ORDER BY g.title";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public static function find($id) {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT g.*, c.name as category_name FROM games g LEFT JOIN categories c ON g.category_id = c.id WHERE g.id = ?");
+        $stmt = $pdo->prepare("SELECT g.*, c.name as category_name 
+                              FROM games g 
+                              LEFT JOIN categories c ON g.category_id = c.id 
+                              WHERE g.id = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    /**
-     * Busca múltiplos jogos por seus IDs.a
-     * @param array $ids Array de IDs de jogos.
-     * @return array Lista de jogos encontrados.
-     */
-    public static function findByIds(array $ids) // <-- Mantivemos apenas UMA versão desta função
-    {
-        if (empty($ids)) {
-            return [];
-        }
-        $pdo = Database::getConnection();
-        $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-        $stmt = $pdo->prepare("SELECT * FROM games WHERE id IN ($placeholders)");
-        $stmt->execute($ids);
-        return $stmt->fetchAll();
-    }
-    
+    // 👇 MÉTODO SAVE COMPLETAMENTE CORRIGIDO - SEM change_type
     public function save() {
         $pdo = Database::getConnection();
-        if($this->id){
-            $stmt = $pdo->prepare('UPDATE games SET title=?, price=?, category_id=?, steam_key=?, description=?, image=? WHERE id=?');
-            $stmt->execute([$this->title, $this->price, $this->category_id, $this->steam_key, $this->description, $this->image, $this->id]);
+        
+        // 👇 APENAS OS CAMPOS QUE EXISTEM NA SUA TABELA
+        $fields = [
+            'title' => $this->title,
+            'price' => $this->price,
+            'category_id' => $this->category_id,
+            'steam_key' => $this->steam_key,
+            'description' => $this->description,
+            'image' => $this->image,
+            'estoque' => $this->estoque
+        ];
+        
+        if ($this->id) {
+            // UPDATE
+            $sql = "UPDATE games SET 
+                    title = :title, 
+                    price = :price, 
+                    category_id = :category_id, 
+                    steam_key = :steam_key, 
+                    description = :description, 
+                    image = :image, 
+                    estoque = :estoque 
+                    WHERE id = :id";
+            
+            $fields['id'] = $this->id;
         } else {
-            $stmt = $pdo->prepare('INSERT INTO games (title, price, category_id, steam_key, description, image) VALUES (?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$this->title, $this->price, $this->category_id, $this->steam_key, $this->description, $this->image]);
-            $this->id = $pdo->lastInsertId();
+            // INSERT
+            $sql = "INSERT INTO games (title, price, category_id, steam_key, description, image, estoque) 
+                    VALUES (:title, :price, :category_id, :steam_key, :description, :image, :estoque)";
+        }
+        
+        try {
+            $stmt = $pdo->prepare($sql);
+            $result = $stmt->execute($fields);
+            
+            if ($result && !$this->id) {
+                $this->id = $pdo->lastInsertId();
+            }
+            
+            return $this->id;
+            
+        } catch (PDOException $e) {
+            error_log("Database error in Game::save: " . $e->getMessage());
+            throw new Exception("Erro ao salvar jogo: " . $e->getMessage());
         }
     }
+    
+    public static function findByIds(array $ids) {
+        if (empty($ids)) return [];
+        
+        $pdo = Database::getConnection();
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $stmt = $pdo->prepare("SELECT * FROM games WHERE id IN ($placeholders)");
+        $stmt->execute($ids);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+?>

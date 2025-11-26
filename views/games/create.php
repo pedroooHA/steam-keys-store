@@ -31,8 +31,14 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">R$</span>
                                         <input type="number" step="0.01" class="form-control form-control-lg" 
-                                               name="price" required placeholder="79.90" min="0">
+                                               name="price" required placeholder="79.90" min="0.01">
                                     </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Estoque</label>
+                                    <input type="number" class="form-control form-control-lg" name="estoque" 
+                                           placeholder="Quantidade em estoque" min="0" value="0">
                                 </div>
 
                                 <div class="mb-4">
@@ -42,7 +48,7 @@
                                         <?php if (!empty($categories)): ?>
                                             <?php foreach($categories as $cat): ?>
                                                 <option value="<?php echo $cat->getId(); ?>">
-                                                    <?php echo htmlentities($cat->getName()); ?>
+                                                    <?php echo htmlspecialchars($cat->getName()); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         <?php else: ?>
@@ -50,7 +56,6 @@
                                         <?php endif; ?>
                                     </select>
                                     
-                                    <!-- Botão para recarregar categorias -->
                                     <div class="mt-2">
                                         <button type="button" class="btn btn-sm btn-outline-primary" id="reloadCategoriesBtn">
                                             <i class="fas fa-sync-alt me-1"></i>Recarregar Categorias
@@ -93,9 +98,9 @@
                                     <div class="mb-3">
                                         <label class="form-label">Ou faça upload de uma imagem</label>
                                         <input type="file" class="form-control" name="image_upload" 
-                                               accept="image/*">
+                                               accept="image/jpeg, image/png, image/gif, image/webp">
                                         <div class="form-text">
-                                            Formatos: JPG, PNG, GIF. Tamanho máximo: 2MB
+                                            Formatos: JPG, PNG, GIF, WebP. Tamanho máximo: 2MB
                                         </div>
                                     </div>
 
@@ -173,7 +178,6 @@
 </div>
 
 <style>
-/* Seus estilos anteriores permanecem os mesmos */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -253,7 +257,6 @@
     transform: translateY(-2px);
 }
 
-/* NOTIFICAÇÕES */
 .notification-card {
     position: relative;
     margin-bottom: 1rem;
@@ -273,20 +276,17 @@
     }
 }
 
-/* PREVIEW DA IMAGEM */
 .img-thumbnail {
     border-radius: 10px;
     border: 2px solid #f0f0f0;
     max-width: 100%;
 }
 
-/* ESTADOS DE CARREGAMENTO */
 .loading {
     opacity: 0.7;
     pointer-events: none;
 }
 
-/* RESPONSIVIDADE */
 @media (max-width: 768px) {
     .container {
         padding: 15px;
@@ -319,7 +319,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ========== FUNCIONALIDADES DO FORMULÁRIO DE JOGOS ==========
+    console.log('🚀 Página carregada - scripts iniciados');
+
+    // ========== ELEMENTOS DO FORMULÁRIO DE JOGOS ==========
     const addGameForm = document.getElementById('addGameForm');
     const resetFormBtn = document.getElementById('resetFormBtn');
     const submitGameBtn = document.getElementById('submitGameBtn');
@@ -331,10 +333,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const reloadCategoriesBtn = document.getElementById('reloadCategoriesBtn');
     const categorySelect = document.getElementById('categorySelect');
 
-    // Função de notificação para jogos
+    // ========== ELEMENTOS DAS CATEGORIAS EM MASSA ==========
+    const bulkAddBtn = document.getElementById('bulkAddBtn');
+    const categoriesList = document.getElementById('categoriesList');
+    const notificationArea = document.getElementById('notificationArea');
+
+    console.log('✅ Elementos encontrados:', {
+        addGameForm: !!addGameForm,
+        bulkAddBtn: !!bulkAddBtn,
+        categoriesList: !!categoriesList
+    });
+
+    // ========== FUNÇÕES DE NOTIFICAÇÃO ==========
     function showGameNotification(message, type = 'success') {
-        const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-danger';
-        const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
+        if (!gameNotificationArea) {
+            console.error('Área de notificação de jogos não encontrada');
+            alert(message);
+            return;
+        }
+
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'warning' ? 'alert-warning' : 'alert-danger';
+        const icon = type === 'success' ? '✅' : 
+                    type === 'warning' ? '⚠️' : '❌';
         
         gameNotificationArea.innerHTML = '';
         const notification = document.createElement('div');
@@ -352,8 +373,250 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-    // ========== FUNCIONALIDADE PARA RECARREGAR CATEGORIAS ==========
-    if (reloadCategoriesBtn) {
+    function showNotification(message, type = 'success') {
+        if (!notificationArea) {
+            console.error('Área de notificação de categorias não encontrada');
+            alert(message);
+            return;
+        }
+
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'warning' ? 'alert-warning' : 'alert-danger';
+        const icon = type === 'success' ? '✅' : 
+                    type === 'warning' ? '⚠️' : '❌';
+        
+        notificationArea.innerHTML = '';
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show notification-card`;
+        notification.innerHTML = `
+            <strong>${icon} ${message}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        notificationArea.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // ========== FUNCIONALIDADES DO FORMULÁRIO DE JOGOS ==========
+    if (addGameForm) {
+        addGameForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('📝 Formulário de jogo enviado');
+            
+            const title = document.querySelector('input[name="title"]').value.trim();
+            const price = document.querySelector('input[name="price"]').value;
+            const category = document.querySelector('select[name="category_id"]').value;
+            
+            if (!title || !price || !category) {
+                showGameNotification('Por favor, preencha todos os campos obrigatórios (*)', 'error');
+                return;
+            }
+            
+            if (parseFloat(price) <= 0) {
+                showGameNotification('O preço deve ser maior que zero', 'error');
+                return;
+            }
+
+            // Mostrar loading
+            const originalText = submitGameBtn.innerHTML;
+            submitGameBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adicionando...';
+            submitGameBtn.disabled = true;
+
+            // Enviar formulário
+            const formData = new FormData(this);
+            
+            console.log('📦 Enviando dados do jogo...');
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('📨 Resposta recebida:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 Dados da resposta:', data);
+                if (data.success) {
+                    showGameNotification(data.message || 'Jogo adicionado com sucesso!', 'success');
+                    addGameForm.reset();
+                    if (imagePreview) imagePreview.style.display = 'none';
+                } else {
+                    showGameNotification(data.message || 'Erro ao adicionar jogo', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erro na requisição:', error);
+                showGameNotification('Erro de conexão. Tente novamente.', 'error');
+            })
+            .finally(() => {
+                submitGameBtn.innerHTML = originalText;
+                submitGameBtn.disabled = false;
+            });
+        });
+    }
+
+    // ========== FUNCIONALIDADES DAS CATEGORIAS EM MASSA ==========
+if (bulkAddBtn && categoriesList) {
+    bulkAddBtn.addEventListener('click', async function() {
+        console.log('🎯 Botão de categorias clicado!');
+        
+        const categoriesText = categoriesList.value.trim();
+        
+        if (!categoriesText) {
+            showNotification('Por favor, digite pelo menos uma categoria.', 'error');
+            return;
+        }
+
+        // Dividir por linhas
+        const categoriesArray = categoriesText.split('\n')
+            .map(cat => cat.trim())
+            .filter(cat => cat.length > 0);
+
+        if (categoriesArray.length === 0) {
+            showNotification('Nenhuma categoria válida encontrada.', 'error');
+            return;
+        }
+
+        console.log('📤 Enviando categorias:', categoriesArray);
+
+        // 👇 PRIMEIRO: Testar se a rota existe
+        console.log('🔍 Testando rota categories...');
+        try {
+            const testResponse = await fetch('index.php?route=categories&action=test');
+            const testData = await testResponse.text();
+            console.log('🧪 Resposta do teste:', testData);
+            
+            // Verificar se é JSON válido
+            try {
+                const parsedTest = JSON.parse(testData);
+                console.log('✅ Rota test funciona:', parsedTest);
+            } catch (e) {
+                console.error('❌ Rota test não retorna JSON:', testData.substring(0, 100));
+            }
+        } catch (error) {
+            console.error('❌ Erro ao testar rota:', error);
+        }
+
+        // 👇 AGORA: Tentar a rota bulkCreate
+        const url = 'index.php?route=categories&action=bulkCreate';
+        console.log('🔗 Tentando URL:', url);
+
+        // Mostrar loading
+        const originalText = bulkAddBtn.innerHTML;
+        bulkAddBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+        bulkAddBtn.disabled = true;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    categories: categoriesArray
+                })
+            });
+
+            console.log('📨 Status da resposta:', response.status);
+            console.log('📨 Headers:', response.headers);
+            
+            // 👇 VERIFICAR O QUE ESTÁ SENDO RETORNADO
+            const responseText = await response.text();
+            console.log('📄 Conteúdo da resposta:', responseText);
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status} - ${responseText}`);
+            }
+
+            // Tentar parsear como JSON
+            let data;
+            try {
+                data = JSON.parse(responseText);
+                console.log('📊 Resposta JSON:', data);
+            } catch (e) {
+                console.error('❌ Resposta não é JSON válido:', responseText.substring(0, 200));
+                throw new Error('Servidor retornou HTML em vez de JSON. Possível erro de rota.');
+            }
+
+            if (data.success) {
+                showNotification(data.message, 'success');
+                categoriesList.value = '';
+                
+                // Recarregar categorias no select
+                if (reloadCategoriesBtn) {
+                    setTimeout(() => reloadCategoriesBtn.click(), 1000);
+                }
+            } else {
+                showNotification(data.message, 'error');
+            }
+
+        } catch (error) {
+            console.error('❌ Erro completo:', error);
+            showNotification('Erro: ' + error.message, 'error');
+        } finally {
+            bulkAddBtn.innerHTML = originalText;
+            bulkAddBtn.disabled = false;
+        }
+    });
+} else {
+    console.error('❌ Elementos de categorias não encontrados');
+}
+
+    // ========== OUTRAS FUNCIONALIDADES ==========
+    
+    // Preview de imagem
+    if (imageUrlInput && imagePreview && previewImage) {
+        imageUrlInput.addEventListener('input', function() {
+            if (this.value) {
+                previewImage.src = this.value;
+                imagePreview.style.display = 'block';
+                if (imageUploadInput) imageUploadInput.value = '';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+    }
+
+    if (imageUploadInput && imagePreview && previewImage) {
+        imageUploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    showGameNotification('A imagem deve ter no máximo 2MB', 'error');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    if (imageUrlInput) imageUrlInput.value = '';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+    }
+
+    // Reset do formulário
+    if (resetFormBtn) {
+        resetFormBtn.addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja limpar todos os campos?')) {
+                if (addGameForm) addGameForm.reset();
+                if (imagePreview) imagePreview.style.display = 'none';
+                showGameNotification('Formulário limpo com sucesso', 'success');
+            }
+        });
+    }
+
+    // Recarregar categorias
+    if (reloadCategoriesBtn && categorySelect) {
         reloadCategoriesBtn.addEventListener('click', async function() {
             const originalText = reloadCategoriesBtn.innerHTML;
             reloadCategoriesBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Carregando...';
@@ -363,10 +626,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch('index.php?route=categories&action=getAll');
                 const categories = await response.json();
                 
-                // Limpar select atual
                 categorySelect.innerHTML = '<option value="">Selecione uma categoria</option>';
                 
-                // Adicionar novas categorias
                 if (categories && categories.length > 0) {
                     categories.forEach(cat => {
                         const option = document.createElement('option');
@@ -389,133 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Preview de imagem a partir de URL
-    imageUrlInput.addEventListener('change', function() {
-        if (this.value) {
-            previewImage.src = this.value;
-            imagePreview.style.display = 'block';
-            imageUploadInput.value = ''; // Limpa o upload se URL for preenchida
-        }
-    });
-
-    // Preview de imagem a partir de upload
-    imageUploadInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                showGameNotification('A imagem deve ter no máximo 2MB', 'error');
-                this.value = '';
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                imagePreview.style.display = 'block';
-                imageUrlInput.value = ''; // Limpa a URL se upload for feito
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Reset do formulário
-    resetFormBtn.addEventListener('click', function() {
-        if (confirm('Tem certeza que deseja limpar todos os campos?')) {
-            addGameForm.reset();
-            imagePreview.style.display = 'none';
-            showGameNotification('Formulário limpo com sucesso', 'success');
-        }
-    });
-
-    // Validação e envio do formulário
-    addGameForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validações básicas
-        const title = document.querySelector('input[name="title"]').value.trim();
-        const price = document.querySelector('input[name="price"]').value;
-        const category = document.querySelector('select[name="category_id"]').value;
-        
-        if (!title || !price || !category) {
-            showGameNotification('Por favor, preencha todos os campos obrigatórios (*)', 'error');
-            return;
-        }
-        
-        if (parseFloat(price) < 0) {
-            showGameNotification('O preço não pode ser negativo', 'error');
-            return;
-        }
-
-        // Mostrar loading
-        const originalText = submitGameBtn.innerHTML;
-        submitGameBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adicionando...';
-        submitGameBtn.disabled = true;
-
-        // Enviar formulário
-        const formData = new FormData(this);
-        
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showGameNotification(data.message || 'Jogo adicionado com sucesso!', 'success');
-                addGameForm.reset();
-                imagePreview.style.display = 'none';
-            } else {
-                showGameNotification(data.message || 'Erro ao adicionar jogo', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            showGameNotification('Erro de conexão. Tente novamente.', 'error');
-        })
-        .finally(() => {
-            submitGameBtn.innerHTML = originalText;
-            submitGameBtn.disabled = false;
-        });
-    });
-
- // ========== FUNCIONALIDADES DAS CATEGORIAS EM MASSA ==========
-const bulkAddBtn = document.getElementById('bulkAddBtn');
-const categoriesList = document.getElementById('categoriesList');
-const notificationArea = document.getElementById('notificationArea');
-
-// Função simplificada de notificação
-function showNotification(message, type = 'success') {
-    console.log('Mostrando notificação:', message, type);
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    const icon = type === 'success' ? '✅' : '❌';
-    
-    notificationArea.innerHTML = '';
-    const notification = document.createElement('div');
-    notification.className = `alert ${alertClass} alert-dismissible fade show notification-card`;
-    notification.innerHTML = `<strong>${icon} ${message}</strong><button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-    notificationArea.appendChild(notification);
-}
-
-// TESTE SIMPLES - verificar se o botão funciona
-console.log('bulkAddBtn encontrado:', bulkAddBtn);
-console.log('categoriesList encontrado:', categoriesList);
-
-bulkAddBtn.addEventListener('click', function() {
-    console.log('🎯 BOTÃO CLICADO - função executando!');
-    
-    const categoriesText = categoriesList.value.trim();
-    console.log('Texto digitado:', categoriesText);
-    
-    if (!categoriesText) {
-        showNotification('Por favor, digite pelo menos uma categoria.', 'error');
-        return;
-    }
-    
-    // Mostrar notificação de teste
-    showNotification('Funcionou! Texto: ' + categoriesText, 'success');
-    
-    // Limpar o campo
-    categoriesList.value = '';
+    console.log('✅ Todos os scripts foram configurados com sucesso!');
 });
 </script>
 

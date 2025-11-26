@@ -63,6 +63,25 @@ switch($route){
         $c = new CategoryController();
         $action = $_GET['action'] ?? 'list';
 
+         // 👇 ADICIONAR bulkCreate NAS AÇÕES QUE REQUEREM ADMIN
+    if(in_array($action, ['create', 'bulkCreate'])) {
+        requireAdmin();
+    }
+
+    // 👇 ADICIONAR SUPORTE PARA bulkCreate E getAll
+    if($action === 'create' && $method === 'POST') {
+        $c->create();
+    } elseif($action === 'bulkCreate' && $method === 'POST') {
+        $c->bulkCreate();
+    } elseif($action === 'getAll') {
+        $c->getAll();
+    } elseif($action === 'create') {
+        $c->showCreate(); // Se você tiver essa view
+    } else {
+        $c->list();
+    }
+    break;
+
         if($action === 'create') {
             requireAdmin();
         }
