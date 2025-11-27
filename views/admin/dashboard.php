@@ -285,14 +285,6 @@
             <a href="?route=admin&action=users" class="action-btn">Acessar</a>
         </div>
 
-        <div class="action-card">
-            <div class="action-icon">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <h4>Relatórios</h4>
-            <p>Visualize relatórios de vendas</p>
-            <a href="?route=admin&action=reports" class="action-btn">Acessar</a>
-        </div>
     </div>
 </div>
         </div>

@@ -8,7 +8,7 @@ class Database
     private function __construct()
     {
         $host = 'localhost';
-        $dbname = 'steam_keys_store'; // Verifique se o nome do banco está correto
+        $dbname = 'steam_keys_store'; 
         $user = 'root';
         $pass = '';
 

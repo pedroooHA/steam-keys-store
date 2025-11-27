@@ -74,7 +74,9 @@ class GameController {
                 throw new Exception('Categoria é obrigatória.');
             }
 
-            // Salvar jogo
+            // 👇 DEBUG: Log antes de salvar
+            error_log("🎯 Salvando jogo: " . $g->getTitle() . ", Preço: " . $g->getPrice() . ", Categoria: " . $g->getCategoryId());
+
             $gameId = $g->save();
             
             echo json_encode([
@@ -84,6 +86,7 @@ class GameController {
             ]);
 
         } catch (Exception $e) {
+            error_log("❌ Erro em GameController::create: " . $e->getMessage());
             http_response_code(400);
             echo json_encode([
                 'success' => false,

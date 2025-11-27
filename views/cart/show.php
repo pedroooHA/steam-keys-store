@@ -106,34 +106,20 @@
                         </div>
                     </div>
 
-  <button class="add-to-cart-btn-custom w-100 checkout-btn"
-        data-bs-toggle="modal" data-bs-target="#paymentModal">
-    <i class="fas fa-lock me-2"></i> Finalizar Compra
-</button>
+                    <button class="add-to-cart-btn-custom w-100 checkout-btn"
+                            data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        <i class="fas fa-lock me-2"></i> Finalizar Compra
+                    </button>
 
-                        <div class="security-badges mt-3 text-center">
-                            <small class="text-muted">
-                                <i class="fas fa-shield-alt me-1"></i>
-                                Compra 100% segura •
-                                <i class="fas fa-lock me-1"></i>
-                                Pagamento criptografado
-                            </small>
-                        </div>
+                    <div class="security-badges mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Compra 100% segura •
+                            <i class="fas fa-lock me-1"></i>
+                            Pagamento criptografado
+                        </small>
                     </div>
 
-                    <!-- Recomendações -->
-                    <div class="recommendations mt-4">
-                        <h6 class="mb-3">Quem comprou este jogo também comprou:</h6>
-                        <div class="recommended-games">
-                            <div class="recommended-game">
-                                <small>The Witcher 3</small>
-                                <small class="final-price-custom">R$ 49,90</small>
-                            </div>
-                            <div class="recommended-game">
-                                <small>Cyberpunk 2077</small>
-                                <small class="final-price-custom">R$ 89,90</small>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -266,7 +252,6 @@
         <!-- QR Code -->
         <div class="qr-code-container mb-4">
           <div class="qr-code-wrapper mx-auto">
-            <!-- Substitua pelo seu QR Code real -->
             <div class="qr-code-placeholder">
               <i class="fas fa-qrcode" style="font-size: 120px; color: #000;"></i>
               <p class="text-muted mt-2 small">QR Code PIX</p>
@@ -612,227 +597,8 @@
     padding: 15px;
   }
 }
-</style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Elementos dos modais
-  const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-  const pixModal = new bootstrap.Modal(document.getElementById('pixModal'));
-  const cardModal = new bootstrap.Modal(document.getElementById('cardModal'));
-  
-  // Botões
-  const confirmPaymentBtn = document.getElementById('confirmPayment');
-  const copyPixCodeBtn = document.getElementById('copyPixCode');
-  const confirmPixPaymentBtn = document.getElementById('confirmPixPayment');
-  const confirmCardPaymentBtn = document.getElementById('confirmCardPayment');
-  const creditCardForm = document.getElementById('creditCardForm');
-  
-  // Contador de tempo para expiração do PIX
-  let countdownTimer;
-  
-  // Botão "Avançar" no modal de seleção
-  if (confirmPaymentBtn) {
-    confirmPaymentBtn.addEventListener('click', function() {
-      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-      
-      // Fecha o modal atual
-      paymentModal.hide();
-      
-      setTimeout(() => {
-        if (selectedMethod === 'pix') {
-          pixModal.show();
-          startCountdown();
-        } else if (selectedMethod === 'card') {
-          cardModal.show();
-          initCardForm();
-        }
-      }, 300);
-    });
-  }
-  
-  // Botão copiar código PIX
-  if (copyPixCodeBtn) {
-    copyPixCodeBtn.addEventListener('click', function() {
-      const pixCodeInput = document.getElementById('pixCode');
-      pixCodeInput.select();
-      pixCodeInput.setSelectionRange(0, 99999);
-      
-      navigator.clipboard.writeText(pixCodeInput.value).then(() => {
-        // Feedback visual
-        const originalHTML = copyPixCodeBtn.innerHTML;
-        copyPixCodeBtn.innerHTML = '<i class="fas fa-check"></i>';
-        copyPixCodeBtn.classList.remove('btn-outline-secondary');
-        copyPixCodeBtn.classList.add('btn-success');
-        
-        setTimeout(() => {
-          copyPixCodeBtn.innerHTML = originalHTML;
-          copyPixCodeBtn.classList.remove('btn-success');
-          copyPixCodeBtn.classList.add('btn-outline-secondary');
-        }, 2000);
-      });
-    });
-  }
-  
-  // Botão de confirmação de pagamento PIX
-  if (confirmPixPaymentBtn) {
-    confirmPixPaymentBtn.addEventListener('click', function() {
-      processPixPayment();
-    });
-  }
-  
-  // Formulário do cartão
-  if (creditCardForm) {
-    creditCardForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      processCardPayment();
-    });
-  }
-  
-  // Função do contador regressivo PIX
-  function startCountdown() {
-    let timeLeft = 30 * 60; // 30 minutos em segundos
-    const countdownElement = document.getElementById('countdown');
-    
-    clearInterval(countdownTimer);
-    
-    countdownTimer = setInterval(() => {
-      if (timeLeft <= 0) {
-        clearInterval(countdownTimer);
-        countdownElement.textContent = 'Expirado';
-        countdownElement.classList.add('text-danger');
-        return;
-      }
-      
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      timeLeft--;
-    }, 1000);
-  }
-  
-  // Inicializar formatação do formulário do cartão
-  function initCardForm() {
-    // Formatação do número do cartão
-    const cardNumberInput = document.getElementById('cardNumber');
-    if (cardNumberInput) {
-      cardNumberInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        value = value.replace(/(\d{4})/g, '$1 ').trim();
-        e.target.value = value.substring(0, 19);
-      });
-    }
-    
-    // Formatação da data de validade
-    const cardExpiryInput = document.getElementById('cardExpiry');
-    if (cardExpiryInput) {
-      cardExpiryInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-          value = value.substring(0, 2) + '/' + value.substring(2, 4);
-        }
-        e.target.value = value.substring(0, 5);
-      });
-    }
-  }
-  
-  // Processar pagamento PIX
-  function processPixPayment() {
-    const originalText = confirmPixPaymentBtn.innerHTML;
-    confirmPixPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
-    confirmPixPaymentBtn.disabled = true;
-    
-    setTimeout(() => {
-      pixModal.hide();
-      showSuccessMessage('Pagamento confirmado!', 'Sua compra foi processada com sucesso.');
-    }, 3000);
-  }
-  
-  // Processar pagamento com cartão
-  function processCardPayment() {
-    const originalText = confirmCardPaymentBtn.innerHTML;
-    confirmCardPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
-    confirmCardPaymentBtn.disabled = true;
-    
-    // Validação simples
-    const termsAgreement = document.getElementById('termsAgreement');
-    if (!termsAgreement.checked) {
-      showErrorMessage('Aceite os termos para continuar');
-      confirmCardPaymentBtn.innerHTML = originalText;
-      confirmCardPaymentBtn.disabled = false;
-      return;
-    }
-    
-    setTimeout(() => {
-      cardModal.hide();
-      showSuccessMessage('Pagamento aprovado!', 'Seu cartão foi processado com sucesso.');
-    }, 3000);
-  }
-  
-  // Mensagem de sucesso
-  function showSuccessMessage(title, text) {
-    Swal.fire({
-      icon: 'success',
-      title: title,
-      text: text,
-      confirmButtonText: 'OK',
-      confirmButtonColor: '#000000'
-    }).then(() => {
-      window.location.href = 'index.php?route=order&action=success';
-    });
-  }
-  
-  // Mensagem de erro
-  function showErrorMessage(text) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Erro',
-      text: text,
-      confirmButtonText: 'OK',
-      confirmButtonColor: '#000000'
-    });
-  }
-  
-  // Resetar contador quando o modal do PIX for fechado
-  document.getElementById('pixModal').addEventListener('hidden.bs.modal', function() {
-    clearInterval(countdownTimer);
-  });
-});
-</script>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-<?php require __DIR__ . '/../layout/footer.php'; ?>
-
-<!-- SweetAlert2 (modal bonito) -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<style>
-/* ESTILOS CONSISTENTES COM OS OUTROS CARDS */
-
-.payment-btn {
-    background: linear-gradient(45deg, #5d5c5cff, #000000ff);  /* azul gamer */
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.payment-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-}
-
+/* ESTILOS DA PÁGINA DO CARRINHO */
 .page-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -1091,53 +857,271 @@ document.addEventListener('DOMContentLoaded', function() {
         font-size: 1rem;
     }
 }
+
+/* Notificações */
+.custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #000000;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
+}
+
+.custom-notification.show {
+    transform: translateX(0);
+}
+
+.custom-notification.info {
+    background: #000000;
+}
+
+.custom-notification.success {
+    background: #28a745;
+}
+
+.custom-notification.error {
+    background: #dc3545;
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Função de notificação minimalista
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.textContent = message;
-        notification.className = `custom-notification ${type}`;
-        document.body.appendChild(notification);
-
-        // Animação de entrada
+  // Elementos dos modais
+  const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+  const pixModal = new bootstrap.Modal(document.getElementById('pixModal'));
+  const cardModal = new bootstrap.Modal(document.getElementById('cardModal'));
+  
+  // Botões
+  const confirmPaymentBtn = document.getElementById('confirmPayment');
+  const copyPixCodeBtn = document.getElementById('copyPixCode');
+  const confirmPixPaymentBtn = document.getElementById('confirmPixPayment');
+  const confirmCardPaymentBtn = document.getElementById('confirmCardPayment');
+  const creditCardForm = document.getElementById('creditCardForm');
+  
+  // Contador de tempo para expiração do PIX
+  let countdownTimer;
+  
+  // Botão "Avançar" no modal de seleção
+  if (confirmPaymentBtn) {
+    confirmPaymentBtn.addEventListener('click', function() {
+      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      
+      paymentModal.hide();
+      
+      setTimeout(() => {
+        if (selectedMethod === 'pix') {
+          pixModal.show();
+          startCountdown();
+        } else if (selectedMethod === 'card') {
+          cardModal.show();
+          initCardForm();
+        }
+      }, 300);
+    });
+  }
+  
+  // Botão copiar código PIX
+  if (copyPixCodeBtn) {
+    copyPixCodeBtn.addEventListener('click', function() {
+      const pixCodeInput = document.getElementById('pixCode');
+      pixCodeInput.select();
+      pixCodeInput.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(pixCodeInput.value).then(() => {
+        const originalHTML = copyPixCodeBtn.innerHTML;
+        copyPixCodeBtn.innerHTML = '<i class="fas fa-check"></i>';
+        copyPixCodeBtn.classList.remove('btn-outline-secondary');
+        copyPixCodeBtn.classList.add('btn-success');
+        
         setTimeout(() => {
-            notification.classList.add('show');
-        }, 50);
-
-        // Remover depois de 2.5s
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 400);
-        }, 2500);
+          copyPixCodeBtn.innerHTML = originalHTML;
+          copyPixCodeBtn.classList.remove('btn-success');
+          copyPixCodeBtn.classList.add('btn-outline-secondary');
+        }, 2000);
+      });
+    });
+  }
+  
+  // Botão de confirmação de pagamento PIX
+  if (confirmPixPaymentBtn) {
+    confirmPixPaymentBtn.addEventListener('click', function() {
+      processPixPayment();
+    });
+  }
+  
+  // Formulário do cartão
+  if (creditCardForm) {
+    creditCardForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      processCardPayment();
+    });
+  }
+  
+  // Função do contador regressivo PIX
+  function startCountdown() {
+    let timeLeft = 30 * 60;
+    const countdownElement = document.getElementById('countdown');
+    
+    clearInterval(countdownTimer);
+    
+    countdownTimer = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(countdownTimer);
+        countdownElement.textContent = 'Expirado';
+        countdownElement.classList.add('text-danger');
+        return;
+      }
+      
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      timeLeft--;
+    }, 1000);
+  }
+  
+  // Inicializar formatação do formulário do cartão
+  function initCardForm() {
+    // Formatação do número do cartão
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+      cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value.substring(0, 19);
+      });
     }
+    
+    // Formatação da data de validade
+    const cardExpiryInput = document.getElementById('cardExpiry');
+    if (cardExpiryInput) {
+      cardExpiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value.substring(0, 5);
+      });
+    }
+  }
+  
+  // Processar pagamento PIX (SIMULAÇÃO)
+function processPixPayment() {
+    const originalText = confirmPixPaymentBtn.innerHTML;
+    confirmPixPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
+    confirmPixPaymentBtn.disabled = true;
+    
+    // Simular processamento do PIX (3 segundos)
+    setTimeout(() => {
+        pixModal.hide();
+        showSuccessMessage('Pagamento PIX Confirmado!', 'Sua compra foi processada com sucesso e o estoque foi atualizado.')
+            .then(() => {
+                // Redirecionar para página de sucesso
+                window.location.href = 'index.php?route=payment&action=success&method=pix';
+            });
+    }, 3000);
+}
 
-    // Evento de remover item
-    document.querySelectorAll('.remove-btn-custom').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const gameId = this.getAttribute('data-game-id');
-            const itemCard = this.closest('.cart-item-card');
+// Processar pagamento com cartão (SIMULAÇÃO)
+function processCardPayment() {
+    const originalText = confirmCardPaymentBtn.innerHTML;
+    confirmCardPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+    confirmCardPaymentBtn.disabled = true;
+    
+    // Validação do formulário
+    const termsAgreement = document.getElementById('termsAgreement');
+    if (!termsAgreement.checked) {
+        showErrorMessage('Aceite os termos para continuar');
+        confirmCardPaymentBtn.innerHTML = originalText;
+        confirmCardPaymentBtn.disabled = false;
+        return;
+    }
+    
+    // Simular processamento do cartão (3 segundos)
+    setTimeout(() => {
+        cardModal.hide();
+        showSuccessMessage('Pagamento com Cartão Aprovado!', 'Sua compra foi processada com sucesso e o estoque foi atualizado.')
+            .then(() => {
+                // Redirecionar para página de sucesso
+                window.location.href = 'index.php?route=payment&action=success&method=card';
+            });
+    }, 3000);
+}
 
-            // Exibe a notificação no estilo do site
-            showNotification('Removendo item do carrinho...', 'info');
-
-            // Animação de remoção
-            itemCard.style.opacity = '0';
-            itemCard.style.transform = 'translateX(80px)';
-
-            setTimeout(() => {
-                window.location.href = `index.php?route=cart&action=remove&game_id=${gameId}`;
-            }, 600);
-        });
+// Mensagem de sucesso ATUALIZADA
+function showSuccessMessage(title, text) {
+    return Swal.fire({
+        icon: 'success',
+        title: title,
+        text: text,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#000000'
     });
-
-    // Botão finalizar compra
-    document.querySelector('.checkout-btn')?.addEventListener('click', function() {
-        showNotification('Processando sua compra...', 'success');
-        // Aqui você pode adicionar a lógica de finalização de compra
+}
+  
+  // Mensagem de erro
+  function showErrorMessage(text) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erro',
+      text: text,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000'
     });
+  }
+  
+  // Resetar contador quando o modal do PIX for fechado
+  document.getElementById('pixModal').addEventListener('hidden.bs.modal', function() {
+    clearInterval(countdownTimer);
+  });
+
+  // Função de notificação minimalista
+  function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.className = `custom-notification ${type}`;
+      document.body.appendChild(notification);
+
+      // Animação de entrada
+      setTimeout(() => {
+          notification.classList.add('show');
+      }, 50);
+
+      // Remover depois de 2.5s
+      setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => notification.remove(), 400);
+      }, 2500);
+  }
+
+  // Evento de remover item
+  document.querySelectorAll('.remove-btn-custom').forEach(button => {
+      button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const gameId = this.getAttribute('data-game-id');
+          const itemCard = this.closest('.cart-item-card');
+
+          // Exibe a notificação no estilo do site
+          showNotification('Removendo item do carrinho...', 'info');
+
+          // Animação de remoção
+          itemCard.style.opacity = '0';
+          itemCard.style.transform = 'translateX(80px)';
+
+          setTimeout(() => {
+              window.location.href = `index.php?route=cart&action=remove&game_id=${gameId}`;
+          }, 600);
+      });
+  });
+
+  // Botão finalizar compra
+  document.querySelector('.checkout-btn')?.addEventListener('click', function() {
+      showNotification('Processando sua compra...', 'success');
+  });
 });
 </script>

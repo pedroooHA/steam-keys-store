@@ -3,10 +3,10 @@
 class HomeController {
 
     public function index() {
-        // Verifica se há uma busca - use $_GET['search'] diretamente
+        
         $search = $_GET['search'] ?? '';
         
-        // DEBUG: Verifique se a busca está chegando
+        
         error_log("Search term: " . $search);
         
         if (!empty($search)) {
@@ -17,7 +17,6 @@ class HomeController {
             $games = Game::all();
         }
 
-        // DEBUG: Verifique quantos jogos retornaram
         error_log("Games found: " . count($games));
         
         // Envia as variáveis para a view
@@ -38,7 +37,6 @@ class HomeController {
         
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // DEBUG: Verifique a query SQL
         error_log("Search SQL: " . $sql);
         error_log("Search term used: " . $searchTerm);
         error_log("Results count: " . count($results));

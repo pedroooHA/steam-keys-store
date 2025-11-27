@@ -8,7 +8,7 @@
 
     <div class="admin-stats">
         <div class="row g-4">
-            <!-- Estatísticas dinâmicas (substitua pelos dados reais do seu banco) -->
+            
             <div class="col-md-3">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -33,7 +33,6 @@
                 </div>
             </div>
             
-            <!-- Adicione mais estatísticas conforme necessário -->
         </div>
     </div>
 

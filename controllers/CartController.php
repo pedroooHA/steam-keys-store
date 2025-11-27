@@ -6,9 +6,6 @@ require_once dirname(__DIR__) . '/config/Database.php';
 
 class CartController
 {
-    /**
-     * Exibe o carrinho do usuário (logado ou visitante)
-     */
     public function show()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -22,7 +19,6 @@ class CartController
         if (isset($_SESSION['user_id'])) {
             $pdo = Database::getConnection();
 
-            // Busca os jogos do carrinho do usuário logado
             $stmt = $pdo->prepare("
                 SELECT g.*, c.quantidade, c.preco_unitario
                 FROM cart c
@@ -32,7 +28,7 @@ class CartController
             $stmt->execute([$_SESSION['user_id']]);
             $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } 
-        // Visitante (sem login)
+        
         else {
             if (!empty($_SESSION['cart'])) {
                 $gameIds = array_keys($_SESSION['cart']);
@@ -76,7 +72,6 @@ class CartController
         if (isset($_SESSION['user_id'])) {
             $pdo = Database::getConnection();
 
-            // Verifica se o jogo já está no carrinho
             $stmt = $pdo->prepare("
                 SELECT * FROM cart 
                 WHERE id_usuario = ? AND id_jogo = ?
@@ -118,9 +113,6 @@ class CartController
         exit;
     }
 
-    /**
-     * Remove um jogo do carrinho (diminui quantidade ou apaga)
-     */
     public function remove()
     {
         if (session_status() === PHP_SESSION_NONE) {

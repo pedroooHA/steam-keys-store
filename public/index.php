@@ -22,178 +22,113 @@ $route = $_GET['route'] ?? 'home';
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch($route){
+
+    // HOME
     case 'home':
         $c = new HomeController();
         $c->index();
         break;
 
+    // LOGIN
     case 'login':
         $c = new AuthController();
         if($method === 'POST') $c->login();
         else $c->showLogin();
         break;
 
+    // REGISTER
     case 'register':
         $c = new AuthController();
         if($method === 'POST') $c->register();
         else $c->showRegister();
         break;
 
+    // LOGOUT
     case 'logout':
         $c = new AuthController();
         $c->logout();
         break;
 
+    // GAMES
     case 'games':
         $c = new GameController();
         $action = $_GET['action'] ?? 'list';
 
-        if(in_array($action, ['create'])) {
-            requireAdmin();
-        }
+        if (in_array($action, ['create'])) requireAdmin();
 
-        if($action === 'create' && $method === 'POST') $c->create();
-        elseif($action === 'create') $c->showCreate();
-        elseif($action === 'list') $c->list();
-        elseif($action === 'view') $c->view();
+        if ($action === 'create' && $method === 'POST') $c->create();
+        elseif ($action === 'create') $c->showCreate();
+        elseif ($action === 'list') $c->list();
+        elseif ($action === 'view') $c->view();
         else $c->list();
         break;
 
+    // CATEGORIES
     case 'categories':
         $c = new CategoryController();
-        $action = $_GET['action'] ?? 'list';
-
-         // 👇 ADICIONAR bulkCreate NAS AÇÕES QUE REQUEREM ADMIN
-    if(in_array($action, ['create', 'bulkCreate'])) {
         requireAdmin();
-    }
 
-    // 👇 ADICIONAR SUPORTE PARA bulkCreate E getAll
-    if($action === 'create' && $method === 'POST') {
-        $c->create();
-    } elseif($action === 'bulkCreate' && $method === 'POST') {
-        $c->bulkCreate();
-    } elseif($action === 'getAll') {
-        $c->getAll();
-    } elseif($action === 'create') {
-        $c->showCreate(); // Se você tiver essa view
-    } else {
-        $c->list();
-    }
-    break;
-
-        if($action === 'create') {
-            requireAdmin();
-        }
-
-        if($action === 'create' && $method === 'POST') $c->create();
+        $action = $_GET['action'] ?? 'list';
+        if ($action === 'create' && $method === 'POST') $c->create();
+        elseif ($action === 'bulkCreate' && $method === 'POST') $c->bulkCreate();
+        elseif ($action === 'getAll') $c->getAll();
         else $c->list();
         break;
 
-    // ✅ ROTA DO CARRINHO (única, limpa e funcional)
+    // CARRINHO
     case 'cart':
         $c = new CartController();
         $action = $_POST['action'] ?? $_GET['action'] ?? 'show';
 
-        if ($action === 'add' && $method === 'POST') {
-            $c->add();
-        } elseif ($action === 'remove') {
-            $c->remove();
-        } else {
-            $c->show();
-        }
+        if ($action === 'add' && $method === 'POST') $c->add();
+        elseif ($action === 'remove') $c->remove();
+        else $c->show();
         break;
 
+    // WISHLIST
     case 'wishlist':
         $c = new WishlistController();
         $action = $_POST['action'] ?? $_GET['action'] ?? 'show';
         
-        if ($action === 'add' && $method === 'POST') {
-            $c->add();
-        } elseif ($action === 'remove') {
-            $c->remove();
+        if ($action === 'add' && $method === 'POST') $c->add();
+        elseif ($action === 'remove') $c->remove();
+        else $c->show();
+        break;
+
+    // PAYMENT
+    case 'payment':
+        $c = new PaymentController();
+        $action = $_GET['action'] ?? 'process';
+
+        if ($action === 'finish') {
+            $c->finalizePurchase();  // REDUZ ESTOQUE AQUI
+        } elseif (method_exists($c, $action)) {
+            $c->$action();
         } else {
-            $c->show();
+            echo "Ação inválida.";
         }
         break;
 
-    // ✅ ROTA: PAINEL ADMINISTRATIVO (ATUALIZADA)
+    // ADMIN
     case 'admin':
-        requireAdmin(); // Garante que só admins acessem
-        
+        requireAdmin();
         $c = new AdminController();
         $action = $_GET['action'] ?? 'dashboard';
-        
-        if ($action === 'dashboard') {
-            $c->dashboard();
-        } elseif ($action === 'users') {
-            $c->showUsers();
-        } elseif ($action === 'edit_user') {
-            $c->editUser();
-        } elseif ($action === 'delete_user') {
-            $c->deleteUser();
-        } elseif ($action === 'add-game' && $method === 'POST') {
-            $c->addGame();
-        } elseif ($action === 'add-game') {
-            $c->showAddGame();
-        } elseif ($action === 'reports') {
-            $c->showReports();
-        } else {
-            $c->dashboard();
-        }
+
+        if ($action === 'dashboard') $c->dashboard();
+        elseif ($action === 'users') $c->showUsers();
+        elseif ($action === 'edit_user') $c->editUser();
+        elseif ($action === 'delete_user') $c->deleteUser();
+        elseif ($action === 'add-game' && $method === 'POST') $c->addGame();
+        elseif ($action === 'add-game') $c->showAddGame();
+        elseif ($action === 'reports') $c->showReports();
+        else $c->dashboard();
         break;
 
-    case 'payment':
-    require __DIR__ . '/../controllers/PaymentController.php';
-    $controller = new PaymentController();
-
-    $action = $_GET['action'] ?? 'process';
-    if (method_exists($controller, $action)) {
-        $controller->$action();
-    } else {
-        echo "Ação inválida";
-    }
-    break;
+    // 404
     default:
         http_response_code(404);
         echo 'Página não encontrada';
         break;
 }
 ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<style>
-/* Botão outline primário */
-.btn-outline-primary {
-    color: #ffffff !important;
-    background-color: #000000ff !important;
-    border-color: #000000ff !important;
-    padding: 10px 18px !important;
-    font-size: 16px !important;
-    border-radius: 8px;
-    transition: all 0.25s ease-in-out;
-}
-
-/* Efeito hover */
-.btn-outline-primary:hover {
-    background-color: #000000ff !important;
-    border-color: #000000ff !important;
-    color: #ffffff !important;
-    transform: scale(1.05);
-}
-
-/* Botão do checkout */
-.btn.btn-success.btn-lg.w-100.checkout-btn {
-    background-color: #000000ff !important;
-    border-color: #000000ff !important;
-    color: #ffffff !important;
-    padding: 12px 20px !important;
-    font-size: 18px !important;
-    border-radius: 8px;
-    transition: all 0.25s ease-in-out;
-}
-
-.btn.btn-success.btn-lg.w-100.checkout-btn:hover {
-    transform: scale(1.05);
-}
-</style>

@@ -10,11 +10,11 @@ if (empty($searchTerm)) {
     exit;
 }
 
-// Conexão com o banco - AJUSTE COM SUAS CREDENCIAIS
+
 $host = 'localhost';
-$dbname = 'steam_keys_store';     // Nome do seu banco
-$username = 'root'; // Normalmente 'root'
-$password = '';   // Normalmente vazio ou 'root'
+$dbname = 'steam_keys_store';   
+$username = 'root'; 
+$password = '';   
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);

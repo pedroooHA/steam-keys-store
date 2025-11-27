@@ -22,7 +22,7 @@ class AuthController {
 
         // 🔹 Armazena dados do usuário na sessão
         $_SESSION['user_id'] = $user->getId();
-        $_SESSION['username'] = $user->getName();   // ou getUsername(), depende do seu model
+        $_SESSION['username'] = $user->getName();   
         $_SESSION['role'] = $user->getRole();
 
         header('Location: index.php');
